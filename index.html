@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cupcake Gourmet - Vitrine Virtual</title>
+    <style>
+        /* Estilos base (CSS3) */
+        :root {
+            --cor-primaria: #8B4513; /* Castanho chocolate */
+            --cor-secundaria: #FFC0CB; /* Rosa cupcake */
+            --cor-fundo: #FAFAFA;
+            --cor-texto: #333333;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+        }
+
+        /* Cabeçalho da Aplicação */
+        header {
+            background-color: var(--cor-primaria);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .icones-topo span {
+            font-size: 1.2rem;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+
+        /* Grelha de Produtos (Vitrine) */
+        .vitrine {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+        }
+
+        .cartao-produto {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .cartao-produto img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            background-color: var(--cor-secundaria); /* Fundo caso não tenha imagem */
+        }
+
+        .info-produto {
+            padding: 10px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .nome-produto {
+            font-size: 1rem;
+            margin: 0 0 5px 0;
+            font-weight: 600;
+        }
+
+        .preco-produto {
+            color: var(--cor-primaria);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .btn-adicionar {
+            background-color: var(--cor-primaria);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-adicionar:hover {
+            background-color: #6b3410;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho -->
+    <header>
+        <h1>Cupcake Gourmet</h1>
+        <div class="icones-topo">
+            <span title="O seu Perfil">👤</span>
+            <span title="Carrinho de Compras">🛒</span>
+        </div>
+    </header>
+
+    <!-- Vitrine de Produtos -->
+    <main class="vitrine">
+        <!-- Cupcake 1 -->
+        <div class="cartao-produto">
+            <!-- Coloque o URL de uma imagem real no src -->
+            <img src="https://via.placeholder.com/150/FFC0CB/8B4513?text=Cupcake" alt="Cupcake Red Velvet">
+            <div class="info-produto">
+                <h2 class="nome-produto">Red Velvet</h2>
+                <span class="preco-produto">R$ 12,00</span>
+                <button class="btn-adicionar">Adicionar</button>
+            </div>
+        </div>
+
+        <!-- Cupcake 2 -->
+        <div class="cartao-produto">
+            <img src="https://via.placeholder.com/150/FFC0CB/8B4513?text=Cupcake" alt="Cupcake de Chocolate">
+            <div class="info-produto">
+                <h2 class="nome-produto">Duplo Chocolate</h2>
+                <span class="preco-produto">R$ 10,00</span>
+                <button class="btn-adicionar">Adicionar</button>
+            </div>
+        </div>
+
+        <!-- Cupcake 3 -->
+        <div class="cartao-produto">
+            <img src="https://via.placeholder.com/150/FFC0CB/8B4513?text=Cupcake" alt="Cupcake de Limão">
+            <div class="info-produto">
+                <h2 class="nome-produto">Limão Siciliano</h2>
+                <span class="preco-produto">R$ 11,00</span>
+                <button class="btn-adicionar">Adicionar</button>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

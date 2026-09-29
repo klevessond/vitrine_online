@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erro de Acesso - Cupcake Gourmet</title>
+    <style>
+        :root {
+            --cor-primaria: #8B4513; 
+            --cor-erro: #D32F2F; /* Vermelho para indicar o erro */
+            --cor-fundo-erro: #FEECEB; /* Fundo avermelhado suave */
+            --cor-texto: #333333;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cor-fundo-erro);
+            color: var(--cor-texto);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .caixa-erro {
+            background-color: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(211, 47, 47, 0.15); /* Sombra com tom avermelhado */
+            width: 85%;
+            max-width: 400px;
+        }
+
+        .icone-erro {
+            font-size: 4rem;
+            margin: 0 0 15px 0;
+            /* Animação que faz o ícone tremer para chamar a atenção */
+            animation: tremer 0.4s ease-in-out;
+        }
+
+        @keyframes tremer {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-8px); }
+            100% { transform: translateX(0); }
+        }
+
+        h1 {
+            color: var(--cor-erro);
+            margin-top: 0;
+            font-size: 1.6rem;
+        }
+
+        p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .btn-voltar {
+            background-color: var(--cor-primaria);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .btn-voltar:hover {
+            background-color: #6b3410;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="caixa-erro">
+        <div class="icone-erro">⚠️</div>
+        <h1>Acesso Negado</h1>
+        <p>O e-mail ou a palavra-passe que introduziu estão incorretos. Por favor, verifique os seus dados de acesso e tente novamente.</p>
+        
+        <!-- Redireciona o utilizador de volta para tentar fazer o login novamente -->
+        <a href="login.html" class="btn-voltar">Tentar Novamente</a>
+    </div>
+
+</body>
+</html>

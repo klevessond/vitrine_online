@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho - Cupcake Gourmet</title>
+    <style>
+        :root {
+            --cor-primaria: #8B4513; 
+            --cor-secundaria: #FFC0CB; 
+            --cor-fundo: #FAFAFA;
+            --cor-texto: #333333;
+            --cor-borda: #E0E0E0;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            padding-bottom: 80px; /* Espaço para o botão fixo no rodapé */
+        }
+
+        header {
+            background-color: var(--cor-primaria);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .btn-voltar {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .secao {
+            background-color: white;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .secao h2 {
+            font-size: 1.1rem;
+            margin-top: 0;
+            border-bottom: 1px solid var(--cor-borda);
+            padding-bottom: 10px;
+            color: var(--cor-primaria);
+        }
+
+        /* Lista de Pedidos */
+        .item-pedido {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--cor-borda);
+        }
+
+        .item-pedido:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-nome {
+            font-weight: bold;
+        }
+
+        .item-preco {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Formulários */
+        .grupo-input {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 12px;
+        }
+
+        .grupo-input label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .grupo-input input {
+            padding: 10px;
+            border: 1px solid var(--cor-borda);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .linha-inputs {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Pagamento */
+        .opcao-pagamento {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            gap: 10px;
+        }
+
+        /* Rodapé Fixo */
+        .rodape-checkout {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            padding: 15px 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        .total-pedido {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .total-titulo {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .total-valor {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--cor-primaria);
+        }
+
+        .btn-finalizar {
+            background-color: var(--cor-primaria);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="btn-voltar">←</a>
+        <h1>Finalizar Pedido</h1>
+    </header>
+
+    <main>
+        <!-- Resumo do Pedido -->
+        <section class="secao">
+            <h2>Itens do Pedido</h2>
+            <div class="item-pedido">
+                <div class="item-info">
+                    <span class="item-nome">2x Cupcake Red Velvet</span>
+                    <span class="item-preco">R$ 12,00 / un</span>
+                </div>
+                <strong>R$ 24,00</strong>
+            </div>
+            <div class="item-pedido">
+                <div class="item-info">
+                    <span class="item-nome">1x Duplo Chocolate</span>
+                    <span class="item-preco">R$ 10,00 / un</span>
+                </div>
+                <strong>R$ 10,00</strong>
+            </div>
+        </section>
+
+        <!-- Endereço de Entrega -->
+        <section class="secao">
+            <h2>Endereço de Entrega</h2>
+            <div class="grupo-input">
+                <label>Rua / Avenida</label>
+                <input type="text" placeholder="Ex: Av. Principal">
+            </div>
+            <div class="linha-inputs">
+                <div class="grupo-input" style="flex: 1;">
+                    <label>Número</label>
+                    <input type="text" placeholder="Ex: 123">
+                </div>
+                <div class="grupo-input" style="flex: 2;">
+                    <label>Complemento</label>
+                    <input type="text" placeholder="Apto 42">
+                </div>
+            </div>
+            <div class="grupo-input">
+                <label>Bairro</label>
+                <input type="text" placeholder="Ex: Centro">
+            </div>
+        </section>
+
+        <!-- Método de Pagamento -->
+        <section class="secao">
+            <h2>Pagamento na Entrega</h2>
+            <label class="opcao-pagamento">
+                <input type="radio" name="pagamento" checked>
+                Cartão de Crédito / Débito
+            </label>
+            <label class="opcao-pagamento">
+                <input type="radio" name="pagamento">
+                PIX
+            </label>
+            <label class="opcao-pagamento">
+                <input type="radio" name="pagamento">
+                Dinheiro
+            </label>
+        </section>
+    </main>
+
+    <!-- Rodapé Fixo para Finalizar -->
+    <div class="rodape-checkout">
+        <div class="total-pedido">
+            <span class="total-titulo">Total a pagar</span>
+            <span class="total-valor">R$ 34,00</span>
+        </div>
+        <!-- Ao clicar, enviará para uma página de sucesso fictícia -->
+        <a href="sucesso.html" class="btn-finalizar">Confirmar</a>
+    </div>
+
+</body>
+</html>

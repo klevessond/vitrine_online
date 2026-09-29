@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido Confirmado - Cupcake Gourmet</title>
+    <style>
+        :root {
+            --cor-primaria: #8B4513; 
+            --cor-secundaria: #FFC0CB; 
+            --cor-fundo: #FAFAFA;
+            --cor-texto: #333333;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cor-secundaria); /* Fundo rosa para dar destaque à caixa branca */
+            color: var(--cor-texto);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Ocupa 100% da altura do ecrã */
+            text-align: center;
+        }
+
+        .caixa-sucesso {
+            background-color: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 85%;
+            max-width: 400px;
+        }
+
+        .icone-animado {
+            font-size: 5rem;
+            margin: 0;
+            margin-bottom: 15px;
+            /* Pequena animação no ícone */
+            animation: salto 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes salto {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: var(--cor-primaria);
+            margin-top: 0;
+            font-size: 1.8rem;
+        }
+
+        p {
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .destaque-tempo {
+            display: inline-block;
+            background-color: #FFF0F2;
+            color: var(--cor-primaria);
+            font-weight: bold;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px dashed var(--cor-secundaria);
+        }
+
+        .btn-inicio {
+            background-color: var(--cor-primaria);
+            color: white;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 25px; /* Botão mais arredondado */
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: inline-block;
+            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .btn-inicio:hover {
+            background-color: #6b3410;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="caixa-sucesso">
+        <div class="icone-animado">🧁✅</div>
+        <h1>Pedido Confirmado!</h1>
+        <p>O seu pedido foi recebido com sucesso e os seus cupcakes já estão a ser preparados com muito carinho.</p>
+        
+        <div class="destaque-tempo">
+            Tempo estimado de entrega:<br>
+            <strong>30 a 45 minutos</strong>
+        </div>
+
+        <p>Acompanhe o estado na sua área de cliente.</p>
+        
+        <!-- Ao clicar, o utilizador volta à página principal, fechando o fluxo de navegação -->
+        <a href="index.html" class="btn-inicio">Voltar ao Início</a>
+    </div>
+
+</body>
+</html>
