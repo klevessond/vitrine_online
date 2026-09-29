@@ -18,7 +18,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--cor-fundo);
             color: var(--cor-texto);
-            padding-bottom: 80px; /* Espaço para o botão fixo no rodapé */
+            padding-bottom: 80px;
         }
 
         header {
@@ -60,7 +60,6 @@
             color: var(--cor-primaria);
         }
 
-        /* Lista de Pedidos */
         .item-pedido {
             display: flex;
             justify-content: space-between;
@@ -87,7 +86,6 @@
             font-size: 0.9rem;
         }
 
-        /* Formulários */
         .grupo-input {
             display: flex;
             flex-direction: column;
@@ -112,7 +110,6 @@
             gap: 10px;
         }
 
-        /* Pagamento */
         .opcao-pagamento {
             display: flex;
             align-items: center;
@@ -120,7 +117,6 @@
             gap: 10px;
         }
 
-        /* Rodapé Fixo */
         .rodape-checkout {
             position: fixed;
             bottom: 0;
@@ -162,7 +158,6 @@
             cursor: pointer;
             text-decoration: none;
         }
-
     </style>
 </head>
 <body>
@@ -173,7 +168,6 @@
     </header>
 
     <main>
-        <!-- Resumo do Pedido -->
         <section class="secao">
             <h2>Itens do Pedido</h2>
             <div class="item-pedido">
@@ -192,7 +186,6 @@
             </div>
         </section>
 
-        <!-- Endereço de Entrega -->
         <section class="secao">
             <h2>Endereço de Entrega</h2>
             <div class="grupo-input">
@@ -215,7 +208,6 @@
             </div>
         </section>
 
-        <!-- Método de Pagamento -->
         <section class="secao">
             <h2>Pagamento na Entrega</h2>
             <label class="opcao-pagamento">
@@ -233,13 +225,11 @@
         </section>
     </main>
 
-    <!-- Rodapé Fixo para Finalizar -->
     <div class="rodape-checkout">
         <div class="total-pedido">
             <span class="total-titulo">Total a pagar</span>
             <span class="total-valor">R$ 34,00</span>
         </div>
-        <!-- Ao clicar, enviará para uma página de sucesso fictícia -->
         <a href="sucesso.html" class="btn-finalizar">Confirmar</a>
     </div>
 

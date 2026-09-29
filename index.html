@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cupcake Gourmet - Vitrine Virtual</title>
     <style>
-        /* Estilos base (CSS3) */
         :root {
-            --cor-primaria: #8B4513; /* Castanho chocolate */
-            --cor-secundaria: #FFC0CB; /* Rosa cupcake */
+            --cor-primaria: #8B4513; 
+            --cor-secundaria: #FFC0CB; 
             --cor-fundo: #FAFAFA;
             --cor-texto: #333333;
         }
@@ -20,7 +19,6 @@
             color: var(--cor-texto);
         }
 
-        /* Cabeçalho da Aplicação */
         header {
             background-color: var(--cor-primaria);
             color: white;
@@ -38,13 +36,19 @@
             font-size: 1.5rem;
         }
 
-        .icones-topo span {
+        .icones-topo a {
             font-size: 1.2rem;
             margin-left: 15px;
             cursor: pointer;
+            text-decoration: none;
+            color: white;
+            transition: opacity 0.3s;
         }
 
-        /* Grelha de Produtos (Vitrine) */
+        .icones-topo a:hover {
+            opacity: 0.8;
+        }
+
         .vitrine {
             padding: 20px;
             display: grid;
@@ -66,7 +70,7 @@
             width: 100%;
             height: 120px;
             object-fit: cover;
-            background-color: var(--cor-secundaria); /* Fundo caso não tenha imagem */
+            background-color: var(--cor-secundaria);
         }
 
         .info-produto {
@@ -107,45 +111,39 @@
 </head>
 <body>
 
-    <!-- Cabeçalho -->
     <header>
         <h1>Cupcake Gourmet</h1>
         <div class="icones-topo">
-            <span title="O seu Perfil">👤</span>
-            <span title="Carrinho de Compras">🛒</span>
+            <a href="login.html" title="O seu Perfil">👤</a>
+            <a href="carrinho.html" title="Carrinho de Compras">🛒</a>
         </div>
     </header>
 
-    <!-- Vitrine de Produtos -->
     <main class="vitrine">
-        <!-- Cupcake 1 -->
         <div class="cartao-produto">
-            <!-- Coloque o URL de uma imagem real no src -->
             <img src="https://via.placeholder.com/150/FFC0CB/8B4513?text=Cupcake" alt="Cupcake Red Velvet">
             <div class="info-produto">
                 <h2 class="nome-produto">Red Velvet</h2>
                 <span class="preco-produto">R$ 12,00</span>
-                <button class="btn-adicionar">Adicionar</button>
+                <button class="btn-adicionar" onclick="window.location.href='carrinho.html'">Adicionar</button>
             </div>
         </div>
 
-        <!-- Cupcake 2 -->
         <div class="cartao-produto">
             <img src="https://via.placeholder.com/150/FFC0CB/8B4513?text=Cupcake" alt="Cupcake de Chocolate">
             <div class="info-produto">
                 <h2 class="nome-produto">Duplo Chocolate</h2>
                 <span class="preco-produto">R$ 10,00</span>
-                <button class="btn-adicionar">Adicionar</button>
+                <button class="btn-adicionar" onclick="window.location.href='carrinho.html'">Adicionar</button>
             </div>
         </div>
 
-        <!-- Cupcake 3 -->
         <div class="cartao-produto">
             <img src="https://via.placeholder.com/150/FFC0CB/8B4513?text=Cupcake" alt="Cupcake de Limão">
             <div class="info-produto">
                 <h2 class="nome-produto">Limão Siciliano</h2>
                 <span class="preco-produto">R$ 11,00</span>
-                <button class="btn-adicionar">Adicionar</button>
+                <button class="btn-adicionar" onclick="window.location.href='carrinho.html'">Adicionar</button>
             </div>
         </div>
     </main>

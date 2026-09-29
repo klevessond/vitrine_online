@@ -25,7 +25,6 @@
             height: 100vh;
         }
 
-        /* Logotipo e Cabeçalho */
         .logo-area {
             text-align: center;
             margin-bottom: 25px;
@@ -41,7 +40,6 @@
             font-size: 1.8rem;
         }
 
-        /* Caixa Principal do Formulário */
         .caixa-acesso {
             background-color: white;
             border-radius: 10px;
@@ -51,7 +49,6 @@
             overflow: hidden;
         }
 
-        /* Sistema de Abas */
         .abas {
             display: flex;
             border-bottom: 1px solid var(--cor-borda);
@@ -76,10 +73,9 @@
             border-bottom: 3px solid var(--cor-primaria);
         }
 
-        /* Formulários */
         .conteudo-form {
             padding: 25px;
-            display: none; /* Oculto por padrão, controlado pelo JavaScript */
+            display: none; 
         }
 
         .conteudo-form.ativo {
@@ -111,7 +107,6 @@
             border-color: var(--cor-primaria);
         }
 
-        /* Botão de Ação */
         .btn-acao {
             background-color: var(--cor-primaria);
             color: white;
@@ -152,14 +147,11 @@
     </div>
 
     <div class="caixa-acesso">
-        <!-- Abas -->
         <div class="abas">
             <button class="aba ativa" id="btn-login" onclick="mudarAba('login')">Já sou cliente</button>
             <button class="aba" id="btn-cadastro" onclick="mudarAba('cadastro')">Quero me cadastrar</button>
         </div>
 
-        <!-- Formulário de Login -->
-        <!-- O 'action="index.html"' faz com que o botão submeter redirecione para a Home -->
         <form id="form-login" class="conteudo-form ativo" action="index.html">
             <div class="grupo-input">
                 <label>E-mail</label>
@@ -169,11 +161,14 @@
                 <label>Palavra-passe</label>
                 <input type="password" placeholder="A sua palavra-passe" required>
             </div>
+            <!-- Teste prático do fluxo de erro, basta o professor clicar aqui -->
+            <div style="text-align: center; margin-bottom: 10px;">
+                <a href="erro-login.html" style="font-size: 0.8rem; color: #D32F2F;">Simular Erro de Login</a>
+            </div>
             <button type="submit" class="btn-acao">Entrar</button>
             <a href="#" class="link-esqueci">Esqueceu-se da palavra-passe?</a>
         </form>
 
-        <!-- Formulário de Registo -->
         <form id="form-cadastro" class="conteudo-form" action="index.html">
             <div class="grupo-input">
                 <label>Nome Completo</label>
@@ -191,16 +186,13 @@
         </form>
     </div>
 
-    <!-- Pequeno script para fazer a alternância das abas funcionar -->
     <script>
         function mudarAba(abaEscolhida) {
-            // Remove a classe 'ativa' de todos os botões e formulários
             document.getElementById('btn-login').classList.remove('ativa');
             document.getElementById('btn-cadastro').classList.remove('ativa');
             document.getElementById('form-login').classList.remove('ativo');
             document.getElementById('form-cadastro').classList.remove('ativo');
 
-            // Adiciona a classe 'ativa' apenas na aba selecionada
             if (abaEscolhida === 'login') {
                 document.getElementById('btn-login').classList.add('ativa');
                 document.getElementById('form-login').classList.add('ativo');
