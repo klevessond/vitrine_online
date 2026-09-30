@@ -49,32 +49,40 @@
             opacity: 0.8;
         }
 
+        /* Grelha que organiza os produtos lado a lado */
         .vitrine {
-            padding: 20px;
+            padding: 30px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
         .cartao-produto {
             background-color: white;
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
             overflow: hidden;
             display: flex;
             flex-direction: column;
             text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .cartao-produto:hover {
+            transform: translateY(-5px);
         }
 
+        /* Regras que limitam as imagens */
         .cartao-produto img {
             width: 100%;
-            height: 120px;
-            object-fit: cover;
-            background-color: var(--cor-secundaria);
+            height: 160px; /* Altura fixa para alinhar os cartões */
+            object-fit: cover; /* Evita que a imagem fique esticada/esmagada */
         }
 
         .info-produto {
-            padding: 10px;
+            padding: 15px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -82,22 +90,30 @@
         }
 
         .nome-produto {
-            font-size: 1rem;
+            font-size: 1.1rem;
             margin: 0 0 5px 0;
             font-weight: 600;
+        }
+        
+        .desc-produto {
+            font-size: 0.85rem;
+            color: #666;
+            margin: 0 0 10px 0;
+            height: 35px; /* Mantém os botões alinhados */
         }
 
         .preco-produto {
             color: var(--cor-primaria);
             font-weight: bold;
-            margin-bottom: 10px;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
         }
 
         .btn-adicionar {
             background-color: var(--cor-primaria);
             color: white;
             border: none;
-            padding: 8px;
+            padding: 10px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
@@ -114,24 +130,26 @@
     <header>
         <h1>Cupcake Gourmet</h1>
         <div class="icones-topo">
-            <a href="login.html" title="O seu Perfil">👤</a>
-            <a href="carrinho.html" title="Carrinho de Compras">🛒</a>
+            <a href="/login" title="O seu Perfil">👤</a>
+            <a href="/carrinho" title="Carrinho de Compras">🛒</a>
         </div>
     </header>
 
-
-    {% for item in cupcakes %}
-    <div class="cartao-produto">
-        <img src="{{ item.imagem_url }}" alt="{{ item.nome }}">
-        <div class="info-produto">
-            <h2 class="nome-produto">{{ item.nome }}</h2>
-            <span class="preco-produto">R$ {{ item.preco }}</span>
-            <button class="btn-adicionar" onclick="window.location.href='/carrinho'">Adicionar</button>
+    <main class="vitrine">
+        {% for item in cupcakes %}
+        <div class="cartao-produto">
+            <img src="{{ item.imagem_url }}" alt="{{ item.nome }}">
+            <div class="info-produto">
+                <h2 class="nome-produto">{{ item.nome }}</h2>
+                <p class="desc-produto">{{ item.descricao }}</p>
+                <span class="preco-produto">R$ {{ item.preco }}</span>
+                <button class="btn-adicionar" onclick="window.location.href='/carrinho'">Adicionar</button>
+            </div>
         </div>
-    </div>
-    {% else %}
-    <p style="text-align: center; width: 100%;">Não há cupcakes disponíveis no momento.</p>
-    {% endfor %}
-</main>
+        {% else %}
+        <p style="text-align: center; grid-column: 1 / -1; width: 100%;">Não há cupcakes disponíveis no momento.</p>
+        {% endfor %}
+    </main>
+
 </body>
 </html>
