@@ -12,16 +12,18 @@ db.init_app(app)
 
 # Cria as tabelas automaticamente (útil para o ambiente de testes e primeira execução)
 # Cria as tabelas automaticamente
+# Cria as tabelas e insere os dados
 with app.app_context():
+    # Remove as tabelas antigas para limpar os links desconfigurados (usar apenas em fase de testes)
+    db.drop_all() 
     db.create_all()
     
-    # Verifica se a tabela está vazia. Se estiver, insere os 3 cupcakes iniciais.
+    # Insere os cupcakes apontando para a pasta /static/imagens/
     if not Produto.query.first():
-        cupcake1 = Produto(nome="Red Velvet", descricao="Delicioso cupcake vermelho", preco=12.00, imagem_url="https://placehold.co/300x200/FFC0CB/8B4513?text=Red+Velvet")
-        cupcake2 = Produto(nome="Duplo Chocolate", descricao="Massa e cobertura de chocolate", preco=10.00, imagem_url="https://placehold.co/300x200/FFC0CB/8B4513?text=Chocolate")
-        cupcake3 = Produto(nome="Limão Siciliano", descricao="Toque cítrico e refrescante", preco=11.00, imagem_url="https://placehold.co/300x200/FFC0CB/8B4513?text=Limao")
+        cupcake1 = Produto(nome="Red Velvet", descricao="Delicioso cupcake vermelho", preco=12.00, imagem_url="/static/imagens/red-velvet.jpg")
+        cupcake2 = Produto(nome="Duplo Chocolate", descricao="Massa e cobertura de chocolate", preco=10.00, imagem_url="/static/imagens/chocolate.jpg")
+        cupcake3 = Produto(nome="Limão Siciliano", descricao="Toque cítrico e refrescante", preco=11.00, imagem_url="/static/imagens/limao.jpg")
         
-        # Adiciona e guarda na base de dados
         db.session.add_all([cupcake1, cupcake2, cupcake3])
         db.session.commit()
 @app.route('/')
