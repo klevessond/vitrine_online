@@ -119,34 +119,19 @@
         </div>
     </header>
 
-    <main class="vitrine">
-        <div class="cartao-produto">
-           <img src="imagens/red-velvet.jpg" alt="Cupcake Red Velvet">
-            <div class="info-produto">
-                <h2 class="nome-produto">Red Velvet</h2>
-                <span class="preco-produto">R$ 12,00</span>
-                <button class="btn-adicionar" onclick="window.location.href='carrinho.html'">Adicionar</button>
-            </div>
-        </div>
 
-        <div class="cartao-produto">
-            <img src="imagens/chocolate.jpg" alt="Cupcake de Chocolate">
-            <div class="info-produto">
-                <h2 class="nome-produto">Duplo Chocolate</h2>
-                <span class="preco-produto">R$ 10,00</span>
-                <button class="btn-adicionar" onclick="window.location.href='carrinho.html'">Adicionar</button>
-            </div>
+    {% for item in cupcakes %}
+    <div class="cartao-produto">
+        <img src="{{ item.imagem_url }}" alt="{{ item.nome }}">
+        <div class="info-produto">
+            <h2 class="nome-produto">{{ item.nome }}</h2>
+            <span class="preco-produto">R$ {{ item.preco }}</span>
+            <button class="btn-adicionar" onclick="window.location.href='/carrinho'">Adicionar</button>
         </div>
-
-        <div class="cartao-produto">
-            <img src="imagens/limao.jpg" alt="Cupcake de Limão">
-            <div class="info-produto">
-                <h2 class="nome-produto">Limão Siciliano</h2>
-                <span class="preco-produto">R$ 11,00</span>
-                <button class="btn-adicionar" onclick="window.location.href='carrinho.html'">Adicionar</button>
-            </div>
-        </div>
-    </main>
-
+    </div>
+    {% else %}
+    <p style="text-align: center; width: 100%;">Não há cupcakes disponíveis no momento.</p>
+    {% endfor %}
+</main>
 </body>
 </html>
