@@ -143,7 +143,7 @@
                 <h2 class="nome-produto">{{ item.nome }}</h2>
                 <p class="desc-produto">{{ item.descricao }}</p>
                 <span class="preco-produto">R$ {{ item.preco }}</span>
-                <button class="btn-adicionar" onclick="window.location.href='/carrinho'">Adicionar</button>
+                <button class="btn-adicionar" onclick="window.location.href='/adicionar/{{ item.id_produto }}'">Adicionar</button>
             </div>
         </div>
         {% else %}

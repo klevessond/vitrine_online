@@ -170,19 +170,23 @@
     <main>
         <section class="secao">
             <h2>Itens do Pedido</h2>
-            <div class="item-pedido">
-                <div class="item-info">
-                    <span class="item-nome">2x Cupcake Red Velvet</span>
-                    <span class="item-preco">R$ 12,00 / un</span>
+            
+            {% if itens %}
+                {% for item in itens %}
+                <div class="item-pedido">
+                    <div class="item-info">
+                        <span class="item-nome">1x {{ item.nome }}</span>
+                        <span class="item-preco">R$ {{ item.preco }}</span>
+                    </div>
+                    <strong>R$ {{ item.preco }}</strong>
                 </div>
-                <strong>R$ 24,00</strong>
-            </div>
-            <div class="item-pedido">
-                <div class="item-info">
-                    <span class="item-nome">1x Duplo Chocolate</span>
-                    <span class="item-preco">R$ 10,00 / un</span>
-                </div>
-                <strong>R$ 10,00</strong>
+                {% endfor %}
+            {% else %}
+                <p style="text-align: center; color: #666;">O seu carrinho está vazio.</p>
+            {% endif %}
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="/limpar_carrinho" style="color: #D32F2F; text-decoration: none; font-size: 0.9rem;">Esvaziar Carrinho</a>
             </div>
         </section>
 
@@ -228,7 +232,7 @@
     <div class="rodape-checkout">
         <div class="total-pedido">
             <span class="total-titulo">Total a pagar</span>
-            <span class="total-valor">R$ 34,00</span>
+            <span class="total-valor">R$ {{ total }}</span>
         </div>
         <a href="sucesso.html" class="btn-finalizar">Confirmar</a>
     </div>
