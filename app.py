@@ -1,10 +1,12 @@
-from flask import Flask, render_template, session, redirect, url_for
-from models import db, Produto
 import os
+import re
+
+from flask import Flask, render_template, session, redirect, url_for, request, flash
+from models import db, Produto, Cliente
 
 app = Flask(__name__)
 
-# Chave secreta necessária para usar a sessão (carrinho).
+# Chave secreta necessária para usar a sessão (carrinho e login).
 # No Render, crie a variável de ambiente SECRET_KEY com um texto aleatório e longo.
 app.secret_key = os.environ.get('SECRET_KEY', 'chave-de-desenvolvimento')
 
@@ -33,6 +35,21 @@ with app.app_context():
         db.session.commit()
 
 
+# Regras de validação do cadastro
+SENHA_MINIMA = 6
+PADRAO_EMAIL = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+
+
+@app.context_processor
+def cliente_logado():
+    """Disponibiliza o cliente logado (ou None) para todos os templates."""
+    id_cliente = session.get('cliente_id')
+    cliente = db.session.get(Cliente, id_cliente) if id_cliente else None
+    return {'cliente_logado': cliente}
+
+
+# ---------------------- Vitrine e carrinho ----------------------
+
 @app.route('/')
 def index():
     # O Controlador consulta o Modelo de Dados
@@ -47,7 +64,6 @@ def adicionar(id_produto):
     if db.session.get(Produto, id_produto) is None:
         return redirect(url_for('index'))
 
-    # Cria um carrinho vazio na sessão, se não existir
     carrinho_atual = session.get('carrinho', [])
     carrinho_atual.append(id_produto)
     session['carrinho'] = carrinho_atual
@@ -60,7 +76,6 @@ def carrinho():
     itens_no_carrinho = []
     total = 0
 
-    # Se houver itens na sessão, procura-os na base de dados
     for id_prod in session.get('carrinho', []):
         produto = db.session.get(Produto, id_prod)
         if produto:
@@ -72,13 +87,72 @@ def carrinho():
 
 @app.route('/limpar_carrinho')
 def limpar_carrinho():
-    session.pop('carrinho', None)  # Apaga o carrinho da sessão
+    session.pop('carrinho', None)
     return redirect(url_for('index'))
 
 
-@app.route('/login')
+# ---------------------- Cadastro, login e logout ----------------------
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('login.html')
+    if request.method == 'GET':
+        return render_template('login.html', aba='login')
+
+    email = request.form.get('email', '').strip().lower()
+    senha = request.form.get('senha', '')
+
+    if not email or not senha:
+        flash('Preencha o e-mail e a senha.', 'erro')
+        return render_template('login.html', aba='login', email=email), 400
+
+    cliente = Cliente.query.filter_by(email=email).first()
+    if cliente is None or not cliente.verificar_senha(senha):
+        # Mesma mensagem para e-mail inexistente e senha errada (segurança)
+        return render_template('erro-login.html'), 401
+
+    session['cliente_id'] = cliente.id_cliente
+    flash(f'Bem-vindo(a) de volta, {cliente.nome}!', 'sucesso')
+    return redirect(url_for('index'))
+
+
+@app.route('/cadastro', methods=['POST'])
+def cadastro():
+    nome = request.form.get('nome', '').strip()
+    email = request.form.get('email', '').strip().lower()
+    senha = request.form.get('senha', '')
+
+    erros = []
+    if not nome:
+        erros.append('Informe o seu nome.')
+    if not PADRAO_EMAIL.match(email):
+        erros.append('Informe um e-mail válido.')
+    if len(senha) < SENHA_MINIMA:
+        erros.append(f'A senha deve ter pelo menos {SENHA_MINIMA} caracteres.')
+    if not erros and Cliente.query.filter_by(email=email).first():
+        erros.append('Este e-mail já está cadastrado. Faça login.')
+
+    if erros:
+        for erro in erros:
+            flash(erro, 'erro')
+        # Devolve o formulário com os dados já digitados (exceto a senha)
+        return render_template('login.html', aba='cadastro', nome=nome, email=email), 400
+
+    novo_cliente = Cliente(nome=nome, email=email)
+    novo_cliente.definir_senha(senha)
+    db.session.add(novo_cliente)
+    db.session.commit()
+
+    # Após o cadastro, o cliente já entra logado
+    session['cliente_id'] = novo_cliente.id_cliente
+    flash(f'Cadastro realizado com sucesso. Olá, {nome}!', 'sucesso')
+    return redirect(url_for('index'))
+
+
+@app.route('/logout')
+def logout():
+    session.pop('cliente_id', None)
+    flash('Você saiu da sua conta.', 'sucesso')
+    return redirect(url_for('index'))
 
 
 @app.route('/erro-login')

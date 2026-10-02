@@ -137,6 +137,39 @@
         .link-esqueci:hover {
             text-decoration: underline;
         }
+        .mensagens {
+            margin: 0 0 15px 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .mensagens li {
+            padding: 10px 12px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .mensagens .erro {
+            background-color: #FEECEB;
+            color: #D32F2F;
+            border: 1px solid #F5C2C0;
+        }
+
+        .mensagens .sucesso {
+            background-color: #EAF7EC;
+            color: #2E7D32;
+            border: 1px solid #B9E2BE;
+        }
+
+        .voltar-loja {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--cor-primaria);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -148,43 +181,42 @@
 
     <div class="caixa-acesso">
         <div class="abas">
-            <button class="aba ativa" id="btn-login" onclick="mudarAba('login')">Já sou cliente</button>
-            <button class="aba" id="btn-cadastro" onclick="mudarAba('cadastro')">Quero me cadastrar</button>
+            <button type="button" class="aba {% if aba != 'cadastro' %}ativa{% endif %}" id="btn-login" onclick="mudarAba('login')">Já sou cliente</button>
+            <button type="button" class="aba {% if aba == 'cadastro' %}ativa{% endif %}" id="btn-cadastro" onclick="mudarAba('cadastro')">Quero me cadastrar</button>
         </div>
 
-        <form id="form-login" class="conteudo-form ativo" action="/">
+        <form id="form-login" class="conteudo-form {% if aba != 'cadastro' %}ativo{% endif %}" action="{{ url_for('login') }}" method="post">
+            {% if aba != 'cadastro' %}{% include '_mensagens.html' %}{% endif %}
             <div class="grupo-input">
-                <label>E-mail</label>
-                <input type="email" placeholder="O seu e-mail" required>
+                <label for="login-email">E-mail</label>
+                <input type="email" id="login-email" name="email" placeholder="O seu e-mail" value="{{ email if aba != 'cadastro' else '' }}" required>
             </div>
             <div class="grupo-input">
-                <label>Palavra-passe</label>
-                <input type="password" placeholder="A sua palavra-passe" required>
-            </div>
-            <!-- Teste prático do fluxo de erro, basta o professor clicar aqui -->
-            <div style="text-align: center; margin-bottom: 10px;">
-                <a href="/erro-login" style="font-size: 0.8rem; color: #D32F2F;">Simular Erro de Login</a>
+                <label for="login-senha">Senha</label>
+                <input type="password" id="login-senha" name="senha" placeholder="A sua senha" required>
             </div>
             <button type="submit" class="btn-acao">Entrar</button>
-            <a href="#" class="link-esqueci">Esqueceu-se da palavra-passe?</a>
         </form>
 
-        <form id="form-cadastro" class="conteudo-form" action="/">
+        <form id="form-cadastro" class="conteudo-form {% if aba == 'cadastro' %}ativo{% endif %}" action="{{ url_for('cadastro') }}" method="post">
+            {% if aba == 'cadastro' %}{% include '_mensagens.html' %}{% endif %}
             <div class="grupo-input">
-                <label>Nome Completo</label>
-                <input type="text" placeholder="Como quer ser chamado?" required>
+                <label for="cad-nome">Nome Completo</label>
+                <input type="text" id="cad-nome" name="nome" placeholder="Como quer ser chamado?" value="{{ nome or '' }}" required>
             </div>
             <div class="grupo-input">
-                <label>E-mail</label>
-                <input type="email" placeholder="O seu melhor e-mail" required>
+                <label for="cad-email">E-mail</label>
+                <input type="email" id="cad-email" name="email" placeholder="O seu melhor e-mail" value="{{ email if aba == 'cadastro' else '' }}" required>
             </div>
             <div class="grupo-input">
-                <label>Criar Palavra-passe</label>
-                <input type="password" placeholder="Mínimo 6 caracteres" required>
+                <label for="cad-senha">Criar Senha</label>
+                <input type="password" id="cad-senha" name="senha" placeholder="Mínimo 6 caracteres" minlength="6" required>
             </div>
             <button type="submit" class="btn-acao">Cadastrar</button>
         </form>
     </div>
+
+    <a href="{{ url_for('index') }}" class="voltar-loja">← Voltar à loja</a>
 
     <script>
         function mudarAba(abaEscolhida) {

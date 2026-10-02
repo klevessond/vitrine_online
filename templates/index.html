@@ -123,6 +123,67 @@
         .btn-adicionar:hover {
             background-color: #6b3410;
         }
+        .icones-topo {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        header {
+            gap: 12px;
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.15rem;
+            }
+
+            .icones-topo a {
+                margin-left: 10px;
+            }
+        }
+
+        .saudacao {
+            font-size: 0.95rem;
+        }
+
+        .icones-topo .link-sair {
+            font-size: 0.9rem;
+            border: 1px solid white;
+            border-radius: 15px;
+            padding: 3px 10px;
+        }
+
+        .area-mensagens {
+            max-width: 1000px;
+            margin: 20px auto 0 auto;
+            padding: 0 30px;
+        }
+
+        .mensagens {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .mensagens li {
+            padding: 10px 12px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .mensagens .erro {
+            background-color: #FEECEB;
+            color: #D32F2F;
+            border: 1px solid #F5C2C0;
+        }
+
+        .mensagens .sucesso {
+            background-color: #EAF7EC;
+            color: #2E7D32;
+            border: 1px solid #B9E2BE;
+        }
     </style>
 </head>
 <body>
@@ -130,10 +191,19 @@
     <header>
         <h1>Cupcake Gourmet</h1>
         <div class="icones-topo">
-            <a href="/login" title="O seu Perfil">👤</a>
-            <a href="/carrinho" title="Carrinho de Compras">🛒</a>
+            {% if cliente_logado %}
+            <span class="saudacao">Olá, {{ cliente_logado.nome.split()[0] }}</span>
+            <a href="{{ url_for('logout') }}" title="Sair da conta" class="link-sair">Sair</a>
+            {% else %}
+            <a href="{{ url_for('login') }}" title="Entrar ou cadastrar">👤</a>
+            {% endif %}
+            <a href="{{ url_for('carrinho') }}" title="Carrinho de Compras">🛒</a>
         </div>
     </header>
+
+    <div class="area-mensagens">
+        {% include '_mensagens.html' %}
+    </div>
 
     <main class="vitrine">
         {% for item in cupcakes %}
