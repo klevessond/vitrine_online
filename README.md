@@ -42,7 +42,7 @@ O sistema foi planejado no PIT I (histórias de usuário, UML e protótipos de t
 | Front-end | HTML5, CSS3, JavaScript e templates Jinja2 |
 | Testes | pytest |
 | Servidor | Gunicorn |
-| Hospedagem | Render |
+| Hospedagem | Render | https://vitrine-online-ii.onrender.com/
 
 ## Arquitetura (MVC)
 
