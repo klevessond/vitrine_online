@@ -49,13 +49,13 @@ Prioridade: **A** = essencial, **B** = importante, **C** = desejável. Pontos na
 | US06 | Como **cliente**, quero entrar com e-mail e senha, para acessar minha conta. | 3 | A | ✅ Implementada |
 | US07 | Como **cliente**, quero sair da conta, para proteger meus dados em um aparelho compartilhado. | 1 | B | ✅ Implementada |
 | US08 | Como **usuário**, quero mensagens claras quando eu errar algum dado, para saber como corrigir. | 2 | A | ✅ Implementada |
-| US09 | Como **cliente**, quero informar o endereço de entrega, para receber os cupcakes em casa. | 2 | A | 🟡 Tela pronta |
-| US10 | Como **cliente**, quero escolher pagar com cartão, PIX ou dinheiro na entrega, para usar o meio que prefiro. | 2 | A | 🟡 Tela pronta |
-| US11 | Como **cliente**, quero confirmar o pedido e ter ele registrado, para que a loja comece a preparar. | 5 | A | 🔜 Próxima sprint |
-| US12 | Como **cliente**, quero ver a confirmação com o número do pedido, para ter certeza de que deu certo. | 2 | A | 🟡 Tela pronta |
-| US13 | Como **cliente**, quero ver meus pedidos anteriores e o status de cada um, para acompanhar a entrega. | 3 | B | 🔜 Próxima sprint |
-| US14 | Como **visitante**, quero alterar a quantidade ou remover um item do carrinho, sem esvaziar tudo. | 3 | B | 🔜 Próxima sprint |
-| US15 | Como **visitante**, quero ser levado ao login ao finalizar sem estar logado, e voltar ao carrinho depois, para não perder minha compra. | 2 | B | 🔜 Próxima sprint |
+| US09 | Como **cliente**, quero informar o endereço de entrega, para receber os cupcakes em casa. | 2 | A | ✅ Implementada |
+| US10 | Como **cliente**, quero escolher pagar com cartão, PIX ou dinheiro na entrega, para usar o meio que prefiro. | 2 | A | ✅ Implementada |
+| US11 | Como **cliente**, quero confirmar o pedido e ter ele registrado, para que a loja comece a preparar. | 5 | A | ✅ Implementada |
+| US12 | Como **cliente**, quero ver a confirmação com o número do pedido, para ter certeza de que deu certo. | 2 | A | ✅ Implementada |
+| US13 | Como **cliente**, quero ver meus pedidos anteriores e o status de cada um, para acompanhar a entrega. | 3 | B | ✅ Implementada |
+| US14 | Como **visitante**, quero alterar a quantidade ou remover um item do carrinho, sem esvaziar tudo. | 3 | B | ✅ Implementada |
+| US15 | Como **visitante**, quero ser levado ao login ao finalizar sem estar logado, e voltar ao carrinho depois, para não perder minha compra. | 2 | B | ✅ Implementada |
 | US16 | Como **administrador**, quero cadastrar, editar e desativar cupcakes, para manter a vitrine atualizada. | 8 | C | Futuro |
 | US17 | Como **administrador**, quero mudar o status dos pedidos, para informar o cliente sobre a entrega. | 5 | C | Futuro |
 | US18 | Como **cliente**, quero recuperar minha senha pelo e-mail, para não perder o acesso à conta. | 5 | C | Futuro |
@@ -107,15 +107,15 @@ Formato **Dado / Quando / Então**:
 - **Dado** que não estou logado, **quando** clico em "Confirmar", **então** sou levado ao login e, depois de entrar, volto ao carrinho com meus itens.
 - **Dado** que deixei a rua em branco, **quando** clico em "Confirmar", **então** vejo uma mensagem indicando o campo obrigatório e meus dados digitados continuam na tela.
 
-## 1.9 Tarefas da próxima sprint
+## 1.9 Tarefas da sprint de pedidos (concluídas)
 
-| História | Tarefa | Estimativa |
-|---|---|---|
-| US11 | Criar os modelos `Pedido` e `ItemPedido` no `models.py` | 2 h |
-| US11 | Dar `name` aos campos do checkout e enviar o formulário via POST | 1 h |
-| US11 | Criar a rota `/finalizar` com as validações RN05 a RN10 | 4 h |
-| US11 | Escrever os testes do pedido | 3 h |
-| US12 | Mostrar o número e o resumo do pedido na tela de sucesso | 2 h |
-| US13 | Criar a rota e a tela "Meus pedidos" | 4 h |
-| US14 | Agrupar itens iguais e criar os botões + / − / remover | 4 h |
-| US15 | Redirecionar ao login e voltar ao carrinho | 2 h |
+| História | Tarefa | Estimativa | Situação |
+|---|---|---|---|
+| US11 | Criar os modelos `Pedido` e `ItemPedido` no `models.py` | 2 h | ✅ |
+| US11 | Dar `name` aos campos do checkout e enviar o formulário via POST | 1 h | ✅ |
+| US11 | Criar a rota `/finalizar` com as validações RN05 a RN10 | 4 h | ✅ |
+| US11 | Escrever os testes do pedido | 3 h | ✅ |
+| US12 | Mostrar o número e o resumo do pedido na tela de sucesso | 2 h | ✅ |
+| US13 | Criar a rota e a tela "Meus pedidos" | 4 h | ✅ |
+| US14 | Agrupar itens iguais e criar os botões + / − / remover | 4 h | ✅ |
+| US15 | Redirecionar ao login e voltar ao carrinho | 2 h | ✅ |

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -189,11 +189,11 @@
             {% if aba != 'cadastro' %}{% include '_mensagens.html' %}{% endif %}
             <div class="grupo-input">
                 <label for="login-email">E-mail</label>
-                <input type="email" id="login-email" name="email" placeholder="O seu e-mail" value="{{ email if aba != 'cadastro' else '' }}" required>
+                <input type="email" id="login-email" name="email" placeholder="Seu e-mail" value="{{ email if aba != 'cadastro' else '' }}" required>
             </div>
             <div class="grupo-input">
                 <label for="login-senha">Senha</label>
-                <input type="password" id="login-senha" name="senha" placeholder="A sua senha" required>
+                <input type="password" id="login-senha" name="senha" placeholder="Sua senha" required>
             </div>
             <button type="submit" class="btn-acao">Entrar</button>
         </form>
@@ -206,7 +206,7 @@
             </div>
             <div class="grupo-input">
                 <label for="cad-email">E-mail</label>
-                <input type="email" id="cad-email" name="email" placeholder="O seu melhor e-mail" value="{{ email if aba == 'cadastro' else '' }}" required>
+                <input type="email" id="cad-email" name="email" placeholder="Seu melhor e-mail" value="{{ email if aba == 'cadastro' else '' }}" required>
             </div>
             <div class="grupo-input">
                 <label for="cad-senha">Criar Senha</label>

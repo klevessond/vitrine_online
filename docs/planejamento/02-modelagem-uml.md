@@ -181,8 +181,10 @@ classDiagram
 
     class Carrinho {
         <<sessão>>
-        -List~int~ ids_produtos
+        -Map~int,int~ quantidades
         +adicionar(id_produto) void
+        +diminuir(id_produto) void
+        +remover(id_produto) void
         +limpar() void
         +total() Decimal
     }
@@ -215,7 +217,7 @@ Notas sobre os relacionamentos:
 - **Composição** entre Pedido e ItemPedido: um item não existe sem o seu pedido. Por isso, no banco, excluir o pedido exclui os itens (`ON DELETE CASCADE`).
 - **Associação** entre ItemPedido e Produto: o produto existe de forma independente e pode estar em vários pedidos.
 - **Carrinho** não é persistido no banco: ele vive na sessão do navegador até o pedido ser confirmado. Por isso aparece com o estereótipo «sessão».
-- `Cliente.definir_senha()` e `verificar_senha()` já estão implementados; `Pedido` e `ItemPedido` serão implementados na próxima sprint.
+- Todas as classes de persistência (`Cliente`, `Produto`, `Pedido` e `ItemPedido`) estão implementadas em `models.py`. O carrinho guarda `{id_produto: quantidade}` na sessão.
 
 ## 2.4 Arquitetura em camadas (MVC)
 

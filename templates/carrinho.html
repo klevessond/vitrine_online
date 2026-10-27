@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -87,6 +87,7 @@
         }
 
         .grupo-input {
+            min-width: 0;
             display: flex;
             flex-direction: column;
             margin-bottom: 12px;
@@ -99,6 +100,8 @@
         }
 
         .grupo-input input {
+            width: 100%;
+            box-sizing: border-box;
             padding: 10px;
             border: 1px solid var(--cor-borda);
             border-radius: 5px;
@@ -158,84 +161,176 @@
             cursor: pointer;
             text-decoration: none;
         }
+
+        .btn-finalizar:disabled {
+            background-color: #BDBDBD;
+            cursor: not-allowed;
+        }
+
+        .controle-qtd {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .controle-qtd a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--cor-borda);
+            border-radius: 50%;
+            color: var(--cor-primaria);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .controle-qtd span {
+            min-width: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .controle-qtd .remover {
+            width: auto;
+            border: none;
+            color: #D32F2F;
+            font-size: 0.85rem;
+            font-weight: normal;
+            margin-left: 6px;
+        }
+
+        .vazio {
+            text-align: center;
+            color: #666;
+        }
+
+        .vazio a {
+            color: var(--cor-primaria);
+            font-weight: bold;
+        }
+
+        .obrigatorio {
+            color: #D32F2F;
+        }
+
+        .area-mensagens {
+            margin: 15px 15px 0 15px;
+        }
+
+        .mensagens {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .mensagens li {
+            padding: 10px 12px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .mensagens .erro {
+            background-color: #FEECEB;
+            color: #D32F2F;
+            border: 1px solid #F5C2C0;
+        }
+
+        .mensagens .sucesso {
+            background-color: #EAF7EC;
+            color: #2E7D32;
+            border: 1px solid #B9E2BE;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="/" class="btn-voltar">←</a>
+        <a href="{{ url_for('index') }}" class="btn-voltar" title="Voltar à vitrine">←</a>
         <h1>Finalizar Pedido</h1>
     </header>
 
+    <div class="area-mensagens">
+        {% include '_mensagens.html' %}
+    </div>
+
+    <form action="{{ url_for('finalizar') }}" method="post">
     <main>
         <section class="secao">
             <h2>Itens do Pedido</h2>
-            
+
             {% if itens %}
                 {% for item in itens %}
                 <div class="item-pedido">
                     <div class="item-info">
-                        <span class="item-nome">1x {{ item.nome }}</span>
-                        <span class="item-preco">R$ {{ item.preco }}</span>
+                        <span class="item-nome">{{ item.quantidade }}x {{ item.produto.nome }}</span>
+                        <span class="item-preco">{{ item.produto.preco | moeda }} cada</span>
+                        <div class="controle-qtd">
+                            <a href="{{ url_for('diminuir', id_produto=item.produto.id_produto) }}" title="Diminuir quantidade">−</a>
+                            <span>{{ item.quantidade }}</span>
+                            <a href="{{ url_for('adicionar', id_produto=item.produto.id_produto) }}" title="Aumentar quantidade">+</a>
+                            <a href="{{ url_for('remover', id_produto=item.produto.id_produto) }}" class="remover">Remover</a>
+                        </div>
                     </div>
-                    <strong>R$ {{ item.preco }}</strong>
+                    <strong>{{ item.subtotal | moeda }}</strong>
                 </div>
                 {% endfor %}
+
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="{{ url_for('limpar_carrinho') }}" style="color: #D32F2F; text-decoration: none; font-size: 0.9rem;">Esvaziar Carrinho</a>
+                </div>
             {% else %}
-                <p style="text-align: center; color: #666;">O seu carrinho está vazio.</p>
+                <p class="vazio">O seu carrinho está vazio.<br><a href="{{ url_for('index') }}">Ver cupcakes</a></p>
             {% endif %}
-            
-            <div style="text-align: center; margin-top: 15px;">
-                <a href="/limpar_carrinho" style="color: #D32F2F; text-decoration: none; font-size: 0.9rem;">Esvaziar Carrinho</a>
-            </div>
         </section>
 
+        {% if itens %}
         <section class="secao">
             <h2>Endereço de Entrega</h2>
             <div class="grupo-input">
-                <label>Rua / Avenida</label>
-                <input type="text" placeholder="Ex: Av. Principal">
+                <label for="rua">Rua / Avenida <span class="obrigatorio">*</span></label>
+                <input type="text" id="rua" name="rua" placeholder="Ex: Av. Principal" maxlength="150" value="{{ dados.rua or '' }}" required>
             </div>
             <div class="linha-inputs">
                 <div class="grupo-input" style="flex: 1;">
-                    <label>Número</label>
-                    <input type="text" placeholder="Ex: 123">
+                    <label for="numero">Número <span class="obrigatorio">*</span></label>
+                    <input type="text" id="numero" name="numero" placeholder="Ex: 123" maxlength="10" value="{{ dados.numero or '' }}" required>
                 </div>
                 <div class="grupo-input" style="flex: 2;">
-                    <label>Complemento</label>
-                    <input type="text" placeholder="Apto 42">
+                    <label for="complemento">Complemento</label>
+                    <input type="text" id="complemento" name="complemento" placeholder="Apto 42" maxlength="60" value="{{ dados.complemento or '' }}">
                 </div>
             </div>
             <div class="grupo-input">
-                <label>Bairro</label>
-                <input type="text" placeholder="Ex: Centro">
+                <label for="bairro">Bairro <span class="obrigatorio">*</span></label>
+                <input type="text" id="bairro" name="bairro" placeholder="Ex: Centro" maxlength="80" value="{{ dados.bairro or '' }}" required>
             </div>
         </section>
 
         <section class="secao">
             <h2>Pagamento na Entrega</h2>
+            {% set escolhido = dados.pagamento or 'cartao' %}
+            {% for valor, texto in formas_pagamento.items() %}
             <label class="opcao-pagamento">
-                <input type="radio" name="pagamento" checked>
-                Cartão de Crédito / Débito
+                <input type="radio" name="pagamento" value="{{ valor }}" {% if valor == escolhido %}checked{% endif %}>
+                {{ texto }}
             </label>
-            <label class="opcao-pagamento">
-                <input type="radio" name="pagamento">
-                PIX
-            </label>
-            <label class="opcao-pagamento">
-                <input type="radio" name="pagamento">
-                Dinheiro
-            </label>
+            {% endfor %}
         </section>
+        {% endif %}
     </main>
 
     <div class="rodape-checkout">
         <div class="total-pedido">
             <span class="total-titulo">Total a pagar</span>
-            <span class="total-valor">R$ {{ total }}</span>
+            <span class="total-valor">{{ total | moeda }}</span>
         </div>
-        <a href="/sucesso" class="btn-finalizar">Confirmar</a>
+        <button type="submit" class="btn-finalizar" {% if not itens %}disabled{% endif %}>Confirmar</button>
     </div>
+    </form>
 
 </body>
 </html>

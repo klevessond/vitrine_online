@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Pedidos - Cupcake Gourmet</title>
+    <style>
+        :root {
+            --cor-primaria: #8B4513;
+            --cor-secundaria: #FFC0CB;
+            --cor-fundo: #FAFAFA;
+            --cor-texto: #333333;
+            --cor-borda: #E0E0E0;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+        }
+
+        header {
+            background-color: var(--cor-primaria);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .btn-voltar {
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        main {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 5px 0 30px 0;
+        }
+
+        .area-mensagens {
+            max-width: 700px;
+            margin: 15px auto 0 auto;
+            padding: 0 15px;
+            box-sizing: border-box;
+        }
+
+        .mensagens {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .mensagens li {
+            padding: 10px 12px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .mensagens .erro {
+            background-color: #FEECEB;
+            color: #D32F2F;
+            border: 1px solid #F5C2C0;
+        }
+
+        .mensagens .sucesso {
+            background-color: #EAF7EC;
+            color: #2E7D32;
+            border: 1px solid #B9E2BE;
+        }
+
+        .cartao-pedido {
+            background-color: white;
+            margin: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .cartao-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--cor-borda);
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .cartao-topo h2 {
+            margin: 0;
+            font-size: 1.05rem;
+            color: var(--cor-primaria);
+        }
+
+        .data {
+            display: block;
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: normal;
+            margin-top: 2px;
+        }
+
+        .status {
+            font-size: 0.8rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 12px;
+            white-space: nowrap;
+            background-color: #FFF0F2;
+            color: var(--cor-primaria);
+            border: 1px solid var(--cor-secundaria);
+        }
+
+        .status-entregue {
+            background-color: #EAF7EC;
+            color: #2E7D32;
+            border-color: #B9E2BE;
+        }
+
+        .status-cancelado {
+            background-color: #F5F5F5;
+            color: #757575;
+            border-color: #E0E0E0;
+        }
+
+        .linha {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            font-size: 0.95rem;
+        }
+
+        .total {
+            font-weight: bold;
+            color: var(--cor-primaria);
+            border-top: 1px dashed var(--cor-borda);
+            margin-top: 6px;
+            padding-top: 8px;
+        }
+
+        .entrega {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .vazio {
+            text-align: center;
+            color: #666;
+            padding: 40px 20px;
+        }
+
+        .vazio a {
+            display: inline-block;
+            margin-top: 15px;
+            background-color: var(--cor-primaria);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="{{ url_for('index') }}" class="btn-voltar" title="Voltar à vitrine">←</a>
+        <h1>Meus Pedidos</h1>
+    </header>
+
+    <div class="area-mensagens">
+        {% include '_mensagens.html' %}
+    </div>
+
+    <main>
+        {% if pedidos %}
+            {% for pedido in pedidos %}
+            <article class="cartao-pedido">
+                <div class="cartao-topo">
+                    <h2>
+                        Pedido nº {{ pedido.id_pedido }}
+                        <span class="data">{{ pedido.data_pedido | data_br }}</span>
+                    </h2>
+                    <span class="status status-{{ pedido.status }}">{{ pedido.status_texto }}</span>
+                </div>
+
+                {% for item in pedido.itens %}
+                <div class="linha">
+                    <span>{{ item.quantidade }}x {{ item.produto.nome }}</span>
+                    <span>{{ item.subtotal() | moeda }}</span>
+                </div>
+                {% endfor %}
+                <div class="linha total">
+                    <span>Total</span>
+                    <span>{{ pedido.valor_total | moeda }}</span>
+                </div>
+
+                <div class="entrega">
+                    <strong>Entrega:</strong> {{ pedido.endereco_completo }}<br>
+                    <strong>Pagamento:</strong> {{ pedido.pagamento_texto }}
+                </div>
+            </article>
+            {% endfor %}
+        {% else %}
+            <div class="vazio">
+                <p>Você ainda não fez nenhum pedido.</p>
+                <a href="{{ url_for('index') }}">Ver cupcakes</a>
+            </div>
+        {% endif %}
+    </main>
+
+</body>
+</html>

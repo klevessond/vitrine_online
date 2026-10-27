@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -147,6 +147,28 @@
             font-size: 0.95rem;
         }
 
+        .link-carrinho {
+            position: relative;
+        }
+
+        .contador {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            background-color: var(--cor-secundaria);
+            color: var(--cor-primaria);
+            font-size: 0.7rem;
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 1px 6px;
+        }
+
+        @media (max-width: 400px) {
+            .saudacao {
+                display: none;
+            }
+        }
+
         .icones-topo .link-sair {
             font-size: 0.9rem;
             border: 1px solid white;
@@ -193,11 +215,12 @@
         <div class="icones-topo">
             {% if cliente_logado %}
             <span class="saudacao">Olá, {{ cliente_logado.nome.split()[0] }}</span>
+            <a href="{{ url_for('meus_pedidos') }}" title="Meus pedidos">📦</a>
             <a href="{{ url_for('logout') }}" title="Sair da conta" class="link-sair">Sair</a>
             {% else %}
             <a href="{{ url_for('login') }}" title="Entrar ou cadastrar">👤</a>
             {% endif %}
-            <a href="{{ url_for('carrinho') }}" title="Carrinho de Compras">🛒</a>
+            <a href="{{ url_for('carrinho') }}" title="Carrinho de Compras" class="link-carrinho">🛒{% if qtd_carrinho %}<span class="contador">{{ qtd_carrinho }}</span>{% endif %}</a>
         </div>
     </header>
 
@@ -212,7 +235,7 @@
             <div class="info-produto">
                 <h2 class="nome-produto">{{ item.nome }}</h2>
                 <p class="desc-produto">{{ item.descricao }}</p>
-                <span class="preco-produto">R$ {{ item.preco }}</span>
+                <span class="preco-produto">{{ item.preco | moeda }}</span>
                 <button class="btn-adicionar" onclick="window.location.href='/adicionar/{{ item.id_produto }}'">Adicionar</button>
             </div>
         </div>

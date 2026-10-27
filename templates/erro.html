@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ titulo }} - Cupcake Gourmet</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #FAFAFA;
+            color: #333333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        .caixa {
+            background-color: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            width: 85%;
+            max-width: 400px;
+        }
+
+        .icone {
+            font-size: 4rem;
+        }
+
+        h1 {
+            color: #8B4513;
+            font-size: 1.6rem;
+        }
+
+        p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            background-color: #8B4513;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="caixa">
+        <div class="icone">🧁❓</div>
+        <h1>{{ titulo }}</h1>
+        <p>{{ mensagem }}</p>
+        <a href="/">Voltar à loja</a>
+    </div>
+</body>
+</html>

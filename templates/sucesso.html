@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +21,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh; 
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding: 30px 0;
             text-align: center;
         }
 
@@ -87,24 +89,79 @@
             background-color: #6b3410;
             transform: scale(1.05);
         }
+        .numero-pedido {
+            font-size: 1.1rem;
+            color: var(--cor-texto);
+            margin-bottom: 5px;
+        }
+
+        .resumo {
+            text-align: left;
+            border-top: 1px solid #EEE;
+            margin-top: 15px;
+            padding-top: 10px;
+            font-size: 0.95rem;
+        }
+
+        .resumo-linha {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+        }
+
+        .resumo-total {
+            font-weight: bold;
+            color: var(--cor-primaria);
+            border-top: 1px dashed #DDD;
+            margin-top: 6px;
+            padding-top: 8px;
+        }
+
+        .resumo-entrega {
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .link-pedidos {
+            display: block;
+            margin-top: 15px;
+            color: var(--cor-primaria);
+            font-weight: bold;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
-
     <div class="caixa-sucesso">
         <div class="icone-animado">🧁✅</div>
         <h1>Pedido Confirmado!</h1>
-        <p>O seu pedido foi recebido com sucesso e os seus cupcakes já estão a ser preparados com muito carinho.</p>
-        
+        <p class="numero-pedido">Pedido nº <strong>{{ pedido.id_pedido }}</strong></p>
+        <p>Recebemos seu pedido e seus cupcakes já vão ser preparados com muito carinho.</p>
         <div class="destaque-tempo">
             Tempo estimado de entrega:<br>
             <strong>30 a 45 minutos</strong>
         </div>
 
-        <p>Acompanhe o estado na sua área de cliente.</p>
-        
-        <a href="/" class="btn-inicio">Voltar ao Início</a>
-    </div>
+        <div class="resumo">
+            {% for item in pedido.itens %}
+            <div class="resumo-linha">
+                <span>{{ item.quantidade }}x {{ item.produto.nome }}</span>
+                <span>{{ item.subtotal() | moeda }}</span>
+            </div>
+            {% endfor %}
+            <div class="resumo-linha resumo-total">
+                <span>Total</span>
+                <span>{{ pedido.valor_total | moeda }}</span>
+            </div>
+            <div class="resumo-entrega">
+                <strong>Entrega:</strong> {{ pedido.endereco_completo }}<br>
+                <strong>Pagamento na entrega:</strong> {{ pedido.pagamento_texto }}
+            </div>
+        </div>
 
+        <a href="{{ url_for('meus_pedidos') }}" class="link-pedidos">Acompanhar em Meus Pedidos</a>
+        <a href="{{ url_for('index') }}" class="btn-inicio">Voltar ao Início</a>
+    </div>
 </body>
 </html>

@@ -8,8 +8,8 @@ O banco foi derivado do diagrama de classes de persistência ([02-modelagem-uml.
 |---|---|
 | `produtos` | ✅ Implementada |
 | `clientes` | ✅ Implementada |
-| `pedidos` | 🔜 Projetada (próxima etapa do desenvolvimento) |
-| `itens_pedido` | 🔜 Projetada (próxima etapa do desenvolvimento) |
+| `pedidos` | ✅ Implementada |
+| `itens_pedido` | ✅ Implementada |
 
 ---
 
@@ -135,7 +135,7 @@ Cupcakes exibidos na vitrine.
 | preco | NUMERIC(10,2) | Não | | | > 0, em reais | Preço de venda atual |
 | imagem_url | VARCHAR(255) | Sim | | | caminho em `/static/imagens/` | Foto do produto |
 
-### Tabela `pedidos` 🔜
+### Tabela `pedidos` ✅
 Cabeçalho do pedido: quem comprou, onde entregar e como pagar.
 
 | Campo | Tipo | Nulo | Chave | Padrão | Domínio / regra | Descrição |
@@ -151,7 +151,7 @@ Cabeçalho do pedido: quem comprou, onde entregar e como pagar.
 | status | VARCHAR(20) | Não | | `recebido` | `recebido`, `em_preparo`, `saiu_entrega`, `entregue`, `cancelado` (RN11) | Situação atual do pedido |
 | valor_total | NUMERIC(10,2) | Não | | | > 0; soma dos itens (RN10) | Valor total do pedido |
 
-### Tabela `itens_pedido` 🔜
+### Tabela `itens_pedido` ✅
 Cada cupcake de um pedido.
 
 | Campo | Tipo | Nulo | Chave | Padrão | Domínio / regra | Descrição |
