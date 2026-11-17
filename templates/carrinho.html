@@ -187,10 +187,27 @@
             font-weight: bold;
         }
 
-        .controle-qtd span {
-            min-width: 20px;
+        .campo-qtd {
+            width: 52px;
+            padding: 4px;
+            border: 1px solid var(--cor-borda);
+            border-radius: 5px;
             text-align: center;
             font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .dica {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        #bloco-data-evento {
+            margin-top: 10px;
+        }
+
+        #bloco-data-evento[hidden] {
+            display: none;
         }
 
         .controle-qtd .remover {
@@ -270,8 +287,10 @@
                         <span class="item-preco">{{ item.produto.preco | moeda }} cada</span>
                         <div class="controle-qtd">
                             <a href="{{ url_for('diminuir', id_produto=item.produto.id_produto) }}" title="Diminuir quantidade">−</a>
-                            <span>{{ item.quantidade }}</span>
-                            <a href="{{ url_for('adicionar', id_produto=item.produto.id_produto) }}" title="Aumentar quantidade">+</a>
+                            <input type="number" class="campo-qtd" name="quantidade" form="qtd-{{ item.produto.id_produto }}"
+                                   value="{{ item.quantidade }}" min="0" max="{{ quantidade_maxima }}" inputmode="numeric"
+                                   aria-label="Quantidade de {{ item.produto.nome }}" onchange="this.form.submit()">
+                            <a href="{{ url_for('aumentar', id_produto=item.produto.id_produto) }}" title="Aumentar quantidade">+</a>
                             <a href="{{ url_for('remover', id_produto=item.produto.id_produto) }}" class="remover">Remover</a>
                         </div>
                     </div>
@@ -311,6 +330,23 @@
         </section>
 
         <section class="secao">
+            <h2>Quando Entregar</h2>
+            {% set tipo_escolhido = dados.tipo_entrega or 'imediata' %}
+            {% for valor, texto in tipos_entrega.items() %}
+            <label class="opcao-pagamento">
+                <input type="radio" name="tipo_entrega" value="{{ valor }}" {% if valor == tipo_escolhido %}checked{% endif %}>
+                {{ texto }}
+            </label>
+            {% endfor %}
+            <div class="grupo-input" id="bloco-data-evento" {% if tipo_escolhido != 'evento' %}hidden{% endif %}>
+                <label for="data_entrega">Data da entrega <span class="obrigatorio">*</span></label>
+                <input type="date" id="data_entrega" name="data_entrega" value="{{ dados.data_entrega or '' }}"
+                       min="{{ data_minima.isoformat() }}" max="{{ data_maxima.isoformat() }}">
+                <span class="dica">Encomendas com pelo menos 2 dias de antecedência (a partir de {{ data_minima | data_curta }}).</span>
+            </div>
+        </section>
+
+        <section class="secao">
             <h2>Pagamento na Entrega</h2>
             {% set escolhido = dados.pagamento or 'cartao' %}
             {% for valor, texto in formas_pagamento.items() %}
@@ -331,6 +367,54 @@
         <button type="submit" class="btn-finalizar" {% if not itens %}disabled{% endif %}>Confirmar</button>
     </div>
     </form>
+
+    {# Formulários das quantidades: ficam fora do formulário principal (HTML não aceita um form dentro de outro) #}
+    {% for item in itens %}
+    <form id="qtd-{{ item.produto.id_produto }}" action="{{ url_for('definir_quantidade', id_produto=item.produto.id_produto) }}" method="post" hidden></form>
+    {% endfor %}
+
+    <script>
+        // Mostra o campo de data só para encomendas de evento
+        const blocoData = document.getElementById('bloco-data-evento');
+        const campoData = document.getElementById('data_entrega');
+        function atualizarTipoEntrega() {
+            const escolhido = document.querySelector('input[name="tipo_entrega"]:checked');
+            const evento = escolhido && escolhido.value === 'evento';
+            if (blocoData) {
+                blocoData.hidden = !evento;
+                campoData.required = evento;
+            }
+        }
+        document.querySelectorAll('input[name="tipo_entrega"]').forEach(r => r.addEventListener('change', atualizarTipoEntrega));
+        atualizarTipoEntrega();
+
+        // Guarda o que já foi digitado no checkout enquanto o cliente muda quantidades
+        const CHAVE = 'checkout-cupcake';
+        const campos = ['rua', 'numero', 'complemento', 'bairro', 'data_entrega'];
+        function salvarRascunho() {
+            const dados = {};
+            campos.forEach(id => { const c = document.getElementById(id); if (c) dados[id] = c.value; });
+            ['tipo_entrega', 'pagamento'].forEach(nome => {
+                const r = document.querySelector('input[name="' + nome + '"]:checked');
+                if (r) dados[nome] = r.value;
+            });
+            try { sessionStorage.setItem(CHAVE, JSON.stringify(dados)); } catch (e) {}
+        }
+        function restaurarRascunho() {
+            let dados = null;
+            try { dados = JSON.parse(sessionStorage.getItem(CHAVE)); } catch (e) {}
+            if (!dados) return;
+            campos.forEach(id => { const c = document.getElementById(id); if (c && !c.value && dados[id]) c.value = dados[id]; });
+            ['tipo_entrega', 'pagamento'].forEach(nome => {
+                const r = dados[nome] && document.querySelector('input[name="' + nome + '"][value="' + dados[nome] + '"]');
+                if (r && !document.querySelector('.mensagens .erro')) r.checked = true;
+            });
+            atualizarTipoEntrega();
+        }
+        restaurarRascunho();
+        document.addEventListener('input', salvarRascunho);
+        document.addEventListener('change', salvarRascunho);
+    </script>
 
 </body>
 </html>

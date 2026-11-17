@@ -1,10 +1,11 @@
 import os
 import re
-from datetime import timezone, timedelta
+from datetime import date, datetime, timezone, timedelta
 from decimal import Decimal
 
 from flask import Flask, render_template, session, redirect, url_for, request, flash, abort
-from models import db, Produto, Cliente, Pedido, ItemPedido, FORMAS_PAGAMENTO
+from sqlalchemy import inspect, text
+from models import db, Produto, Cliente, Pedido, ItemPedido, FORMAS_PAGAMENTO, TIPOS_ENTREGA
 
 app = Flask(__name__)
 
@@ -25,8 +26,23 @@ db.init_app(app)
 
 # Cria as tabelas (se ainda não existirem) e insere os cupcakes iniciais.
 # Não usamos db.drop_all() para não apagar os dados a cada deploy.
+def adicionar_colunas_novas():
+    """O db.create_all() não altera tabelas que já existem. Esta função acrescenta,
+    no banco já publicado, as colunas criadas depois (sem apagar nenhum dado)."""
+    colunas = {c['name'] for c in inspect(db.engine).get_columns('pedidos')}
+    novas = {
+        'tipo_entrega': "VARCHAR(10) NOT NULL DEFAULT 'imediata'",
+        'data_entrega': 'DATE',
+    }
+    with db.engine.begin() as conexao:
+        for nome, definicao in novas.items():
+            if nome not in colunas:
+                conexao.execute(text(f'ALTER TABLE pedidos ADD COLUMN {nome} {definicao}'))
+
+
 with app.app_context():
     db.create_all()
+    adicionar_colunas_novas()
 
     if not Produto.query.first():
         cupcake1 = Produto(nome="Red Velvet", descricao="Delicioso cupcake vermelho", preco=12.00, imagem_url="/static/imagens/red-velvet.jpg")
@@ -40,7 +56,9 @@ with app.app_context():
 # Regras de validação
 SENHA_MINIMA = 6
 PADRAO_EMAIL = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
-QUANTIDADE_MAXIMA = 50  # por produto, para evitar pedidos absurdos
+QUANTIDADE_MAXIMA = 200  # por sabor; encomendas para eventos pedem quantidades maiores
+ANTECEDENCIA_EVENTO = 2   # dias mínimos entre o pedido e a entrega de uma encomenda (RN12)
+PRAZO_MAXIMO_EVENTO = 90  # encomendas aceitas para até 90 dias à frente
 
 
 # ---------------------- Funções auxiliares ----------------------
@@ -57,6 +75,12 @@ try:
     FUSO_BRASIL = ZoneInfo('America/Sao_Paulo')
 except Exception:  # sistema sem base de fusos: usa UTC-3 fixo
     FUSO_BRASIL = timezone(timedelta(hours=-3))
+
+
+@app.template_filter('data_curta')
+def formatar_data_curta(data):
+    """2026-12-05 -> '05/12/2026'."""
+    return data.strftime('%d/%m/%Y') if data else ''
 
 
 @app.template_filter('data_br')
@@ -111,6 +135,24 @@ def itens_do_carrinho():
     return itens, total
 
 
+def hoje_no_brasil():
+    return datetime.now(FUSO_BRASIL).date()
+
+
+def limites_encomenda():
+    """Primeira e última data aceitas para uma encomenda de evento (RN12)."""
+    hoje = hoje_no_brasil()
+    return hoje + timedelta(days=ANTECEDENCIA_EVENTO), hoje + timedelta(days=PRAZO_MAXIMO_EVENTO)
+
+
+def mostrar_carrinho(itens, total, dados, status=200):
+    data_minima, data_maxima = limites_encomenda()
+    return render_template('carrinho.html', itens=itens, total=total, dados=dados,
+                           formas_pagamento=FORMAS_PAGAMENTO, tipos_entrega=TIPOS_ENTREGA,
+                           data_minima=data_minima, data_maxima=data_maxima,
+                           quantidade_maxima=QUANTIDADE_MAXIMA), status
+
+
 def ir_para_login(mensagem, destino):
     """Guarda para onde voltar depois do login e leva o usuário à tela de login."""
     session['depois_do_login'] = destino
@@ -133,11 +175,58 @@ def index():
 
 @app.route('/adicionar/<int:id_produto>')
 def adicionar(id_produto):
-    if db.session.get(Produto, id_produto) is None:
+    """Botão Adicionar da vitrine: o cliente continua na vitrine e vê um aviso."""
+    produto = db.session.get(Produto, id_produto)
+    if produto is None:
         return redirect(url_for('index'))
 
+    if somar_ao_carrinho(id_produto):
+        flash(f'{produto.nome} adicionado ao carrinho.', 'carrinho')
+    else:
+        flash(f'Limite de {QUANTIDADE_MAXIMA} unidades de {produto.nome} por pedido.', 'erro')
+    # Volta para o mesmo cupcake na vitrine, sem pular para o topo da página
+    return redirect(url_for('index', _anchor=f'produto-{id_produto}'))
+
+
+@app.route('/aumentar/<int:id_produto>')
+def aumentar(id_produto):
+    """Botão + do carrinho: soma uma unidade e continua no carrinho."""
+    if db.session.get(Produto, id_produto) is not None and not somar_ao_carrinho(id_produto):
+        flash(f'O limite é de {QUANTIDADE_MAXIMA} unidades por sabor.', 'erro')
+    return redirect(url_for('carrinho'))
+
+
+def somar_ao_carrinho(id_produto):
+    """Soma uma unidade. Devolve False se o limite por sabor já foi atingido."""
     carrinho = obter_carrinho()
-    carrinho[id_produto] = min(carrinho.get(id_produto, 0) + 1, QUANTIDADE_MAXIMA)
+    atual = carrinho.get(id_produto, 0)
+    if atual >= QUANTIDADE_MAXIMA:
+        return False
+    carrinho[id_produto] = atual + 1
+    salvar_carrinho(carrinho)
+    return True
+
+
+@app.route('/quantidade/<int:id_produto>', methods=['POST'])
+def definir_quantidade(id_produto):
+    """Campo de quantidade do carrinho: o cliente digita o número direto."""
+    carrinho = obter_carrinho()
+    if id_produto not in carrinho:
+        return redirect(url_for('carrinho'))
+
+    texto = request.form.get('quantidade', '').strip()
+    if not texto.isdigit():
+        flash('Digite a quantidade usando apenas números.', 'erro')
+        return redirect(url_for('carrinho'))
+
+    quantidade = int(texto)
+    if quantidade == 0:
+        carrinho.pop(id_produto)
+    elif quantidade > QUANTIDADE_MAXIMA:
+        carrinho[id_produto] = QUANTIDADE_MAXIMA
+        flash(f'O limite é de {QUANTIDADE_MAXIMA} unidades por sabor. A quantidade foi ajustada.', 'erro')
+    else:
+        carrinho[id_produto] = quantidade
     salvar_carrinho(carrinho)
     return redirect(url_for('carrinho'))
 
@@ -164,8 +253,7 @@ def carrinho():
     itens, total = itens_do_carrinho()
     # Dados do checkout guardados quando o usuário precisou fazer login (US15)
     dados = session.pop('dados_checkout', {})
-    return render_template('carrinho.html', itens=itens, total=total, dados=dados,
-                           formas_pagamento=FORMAS_PAGAMENTO)
+    return mostrar_carrinho(itens, total, dados)
 
 
 @app.route('/limpar_carrinho')
@@ -184,6 +272,8 @@ def finalizar():
         'complemento': request.form.get('complemento', '').strip(),
         'bairro': request.form.get('bairro', '').strip(),
         'pagamento': request.form.get('pagamento', ''),
+        'tipo_entrega': request.form.get('tipo_entrega', 'imediata'),
+        'data_entrega': request.form.get('data_entrega', '').strip(),
     }
 
     # RN05: só cliente logado finaliza o pedido
@@ -205,6 +295,23 @@ def finalizar():
         erros.append('Preencha rua, número e bairro para a entrega.')
     if dados['pagamento'] not in FORMAS_PAGAMENTO:
         erros.append('Escolha uma forma de pagamento.')
+    # RN12: encomenda para evento exige uma data dentro do prazo aceito
+    data_entrega = None
+    if dados['tipo_entrega'] not in TIPOS_ENTREGA:
+        erros.append('Escolha quando quer receber o pedido.')
+    elif dados['tipo_entrega'] == 'evento':
+        data_minima, data_maxima = limites_encomenda()
+        try:
+            data_entrega = date.fromisoformat(dados['data_entrega'])
+        except ValueError:
+            erros.append('Escolha a data de entrega da encomenda.')
+        else:
+            if data_entrega < data_minima:
+                erros.append(f'Encomendas precisam de pelo menos {ANTECEDENCIA_EVENTO} dias de antecedência '
+                             f'(a partir de {data_minima:%d/%m/%Y}).')
+            elif data_entrega > data_maxima:
+                erros.append(f'Aceitamos encomendas para até {PRAZO_MAXIMO_EVENTO} dias '
+                             f'(até {data_maxima:%d/%m/%Y}).')
     limites = {'rua': 150, 'numero': 10, 'complemento': 60, 'bairro': 80}
     for campo, limite in limites.items():
         if len(dados[campo]) > limite:
@@ -213,8 +320,7 @@ def finalizar():
     if erros:
         for erro in erros:
             flash(erro, 'erro')
-        return render_template('carrinho.html', itens=itens, total=total, dados=dados,
-                               formas_pagamento=FORMAS_PAGAMENTO), 400
+        return mostrar_carrinho(itens, total, dados, 400)
 
     pedido = Pedido(
         cliente=cliente,
@@ -224,6 +330,8 @@ def finalizar():
         bairro=dados['bairro'],
         forma_pagamento=dados['pagamento'],
         status='recebido',  # RN11
+        tipo_entrega=dados['tipo_entrega'],
+        data_entrega=data_entrega,
     )
     for item in itens:
         # RN09: guarda o preço atual do produto

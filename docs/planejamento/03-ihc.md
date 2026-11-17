@@ -103,10 +103,11 @@ flowchart TD
     T6["TELA06<br/>Carrinho / Finalizar"]
     T7["TELA07<br/>Pedido Confirmado"]
 
-    T1 -- "ícone 👤" --> T2
-    T1 -- "ícone 🛒 (sem itens)" --> T5
-    T1 -- "Adicionar / 🛒" --> T6
-    T1 -- "ícone 📦" --> T3
+    T1 -- "Entrar" --> T2
+    T1 -- "Carrinho (sem itens)" --> T5
+    T1 -- "Carrinho / Ver carrinho" --> T6
+    T1 -- "Adicionar (aviso Item adicionado)" --> T1
+    T1 -- "Pedidos" --> T3
     T1 -- "Sair" --> T1
 
     T2 -- "Entrar / Cadastrar OK" --> T1

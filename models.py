@@ -39,6 +39,12 @@ FORMAS_PAGAMENTO = {
     'dinheiro': 'Dinheiro',
 }
 
+# Tipos de entrega (RN12): valor gravado -> texto exibido
+TIPOS_ENTREGA = {
+    'imediata': 'Entrega agora (30 a 45 minutos)',
+    'evento': 'Encomenda para evento (escolher a data)',
+}
+
 # Situações possíveis de um pedido (RN11): valor gravado -> texto exibido
 STATUS_PEDIDO = {
     'recebido': 'Recebido',
@@ -61,6 +67,9 @@ class Pedido(db.Model):
     forma_pagamento = db.Column(db.String(10), nullable=False)
     status = db.Column(db.String(20), nullable=False, default='recebido')
     valor_total = db.Column(db.Numeric(10, 2), nullable=False)
+    # RN12: entrega imediata ou encomenda para evento, com data escolhida pelo cliente
+    tipo_entrega = db.Column(db.String(10), nullable=False, default='imediata')
+    data_entrega = db.Column(db.Date)
 
     cliente = db.relationship('Cliente', backref=db.backref('pedidos', lazy=True))
     # Composição: os itens não existem sem o pedido (ON DELETE CASCADE)
@@ -74,6 +83,10 @@ class Pedido(db.Model):
     @property
     def pagamento_texto(self):
         return FORMAS_PAGAMENTO.get(self.forma_pagamento, self.forma_pagamento)
+
+    @property
+    def e_encomenda(self):
+        return self.tipo_entrega == 'evento'
 
     @property
     def status_texto(self):

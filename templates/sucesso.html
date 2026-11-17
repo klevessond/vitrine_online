@@ -137,10 +137,19 @@
         <div class="icone-animado">🧁✅</div>
         <h1>Pedido Confirmado!</h1>
         <p class="numero-pedido">Pedido nº <strong>{{ pedido.id_pedido }}</strong></p>
+        {% if pedido.e_encomenda %}
+        <p>Recebemos sua encomenda. Os cupcakes serão preparados fresquinhos para a data do seu evento.</p>
+        {% else %}
         <p>Recebemos seu pedido e seus cupcakes já vão ser preparados com muito carinho.</p>
+        {% endif %}
         <div class="destaque-tempo">
+            {% if pedido.e_encomenda %}
+            Encomenda agendada para:<br>
+            <strong>{{ pedido.data_entrega | data_curta }}</strong>
+            {% else %}
             Tempo estimado de entrega:<br>
             <strong>30 a 45 minutos</strong>
+            {% endif %}
         </div>
 
         <div class="resumo">
@@ -163,5 +172,9 @@
         <a href="{{ url_for('meus_pedidos') }}" class="link-pedidos">Acompanhar em Meus Pedidos</a>
         <a href="{{ url_for('index') }}" class="btn-inicio">Voltar ao Início</a>
     </div>
+    <script>
+        // Pedido concluído: apaga o rascunho do endereço guardado no carrinho
+        try { sessionStorage.removeItem('checkout-cupcake'); } catch (e) {}
+    </script>
 </body>
 </html>

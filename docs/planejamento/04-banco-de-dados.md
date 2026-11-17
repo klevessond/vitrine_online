@@ -150,6 +150,8 @@ Cabeçalho do pedido: quem comprou, onde entregar e como pagar.
 | forma_pagamento | VARCHAR(10) | Não | | | `cartao`, `pix`, `dinheiro` (RN08) | Pagamento na entrega |
 | status | VARCHAR(20) | Não | | `recebido` | `recebido`, `em_preparo`, `saiu_entrega`, `entregue`, `cancelado` (RN11) | Situação atual do pedido |
 | valor_total | NUMERIC(10,2) | Não | | | > 0; soma dos itens (RN10) | Valor total do pedido |
+| tipo_entrega | VARCHAR(10) | Não | | `imediata` | `imediata` ou `evento` (RN12) | Entrega agora ou encomenda para evento |
+| data_entrega | DATE | Sim | | | obrigatória se `tipo_entrega = 'evento'`; de hoje + 2 dias a hoje + 90 dias (RN12) | Data escolhida para a encomenda |
 
 ### Tabela `itens_pedido` ✅
 Cada cupcake de um pedido.

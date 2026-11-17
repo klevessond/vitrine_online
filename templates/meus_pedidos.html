@@ -211,6 +211,9 @@
                 </div>
 
                 <div class="entrega">
+                    {% if pedido.e_encomenda %}
+                    <strong>Encomenda para:</strong> {{ pedido.data_entrega | data_curta }}<br>
+                    {% endif %}
                     <strong>Entrega:</strong> {{ pedido.endereco_completo }}<br>
                     <strong>Pagamento:</strong> {{ pedido.pagamento_texto }}
                 </div>

@@ -20,10 +20,12 @@ O sistema foi planejado no PIT I (histórias de usuário, UML e protótipos de t
 ## Funcionalidades
 
 - **Vitrine virtual:** lista os cupcakes com foto, descrição e preço no padrão brasileiro (R$ 12,00).
-- **Carrinho de compras:** adicionar, aumentar ou diminuir a quantidade, remover um item ou esvaziar tudo, com contador no ícone 🛒.
+- **Carrinho de compras:** ao clicar em Adicionar, o cliente continua na vitrine e vê o aviso "Item adicionado". No carrinho, dá para digitar a quantidade direto (até 200 por sabor), usar + e −, remover um item ou esvaziar tudo.
+- **Ícones com nome:** os atalhos do topo mostram o nome embaixo (Entrar, Pedidos, Carrinho e Sair).
 - **Cadastro de clientes:** nome, e-mail e senha, com validação dos dados.
 - **Login e logout:** acesso à conta com e-mail e senha.
 - **Finalização do pedido:** endereço de entrega e pagamento na entrega (cartão, PIX ou dinheiro). O pedido é gravado no banco com o preço da época da compra.
+- **Encomenda para eventos:** o cliente escolhe entre entrega agora ou encomenda com data marcada, com pelo menos 2 dias de antecedência e até 90 dias à frente.
 - **Login no meio da compra:** quem não está logado é levado ao login e depois volta ao carrinho, sem perder os itens nem o endereço digitado.
 - **Pedido confirmado:** número do pedido, itens, total, endereço e forma de pagamento.
 - **Meus pedidos:** histórico com data, itens, total e status de cada pedido.
@@ -81,11 +83,11 @@ O diagrama, a normalização, o script SQL e o dicionário de dados completo est
 ## Manual de uso
 
 1. **Ver os produtos:** ao abrir o site, a vitrine mostra todos os cupcakes disponíveis.
-2. **Montar o carrinho:** clique em **Adicionar** no cupcake desejado. No carrinho, use **+** e **−** para mudar a quantidade, **Remover** para tirar um item ou **Esvaziar Carrinho** para recomeçar. Para continuar comprando, use a seta **←** no topo.
+2. **Montar o carrinho:** clique em **Adicionar** no cupcake desejado. Você continua na vitrine e aparece o aviso "Item adicionado", com o atalho **Ver carrinho**. No carrinho, digite a quantidade direto no campo ou use **+** e **−**; **Remover** tira um item e **Esvaziar Carrinho** recomeça. Para continuar comprando, use a seta **←** no topo.
 3. **Criar uma conta:** clique no ícone 👤, escolha a aba **Quero me cadastrar** e preencha nome, e-mail e uma senha de pelo menos 6 caracteres. Ao concluir, você já entra logado.
 4. **Entrar na conta:** clique no ícone 👤, preencha e-mail e senha na aba **Já sou cliente** e clique em **Entrar**.
-5. **Finalizar o pedido:** no carrinho, preencha rua, número e bairro (o complemento é opcional), escolha a forma de pagamento na entrega e clique em **Confirmar**. Se você não estiver logado, o sistema pede o login e depois volta ao carrinho com tudo preenchido.
-6. **Acompanhar os pedidos:** clique no ícone 📦 no topo da vitrine (ou em **Acompanhar em Meus Pedidos**, na confirmação) para ver o histórico e o status de cada pedido.
+5. **Finalizar o pedido:** no carrinho, preencha rua, número e bairro (o complemento é opcional), escolha **Entrega agora** ou **Encomenda para evento** (neste caso, informe a data, com pelo menos 2 dias de antecedência), escolha a forma de pagamento na entrega e clique em **Confirmar**. Se você não estiver logado, o sistema pede o login e depois volta ao carrinho com tudo preenchido.
+6. **Acompanhar os pedidos:** clique em **Pedidos** no topo da vitrine (ou em **Acompanhar em Meus Pedidos**, na confirmação) para ver o histórico e o status de cada pedido.
 7. **Sair:** clique em **Sair** no topo da página.
 
 ## Como rodar no seu computador
@@ -119,13 +121,14 @@ Depois, abra **http://127.0.0.1:5000** no navegador. Localmente, o sistema usa u
 pytest -v
 ```
 
-São 36 testes automatizados, que usam um banco temporário em memória (não alteram dados reais). Eles cobrem:
+São 53 testes automatizados, que usam um banco temporário em memória (não alteram dados reais). Eles cobrem:
 
 - **vitrine:** exibição dos produtos e preço no padrão brasileiro;
-- **carrinho:** vazio, adicionar, agrupar quantidades, diminuir, remover, esvaziar, soma do total e produto inexistente;
+- **carrinho:** vazio, adicionar continuando na vitrine, agrupar quantidades, + e −, quantidade digitada (válida, zero, inválida e acima do limite), remover, esvaziar, soma do total e produto inexistente;
 - **cadastro:** sucesso, senha guardada com hash, e-mail duplicado, e-mail inválido, senha curta e manutenção dos dados após um erro;
 - **login:** sucesso, senha errada, e-mail inexistente, campos vazios e logout;
-- **pedido:** finalização com sucesso, carrinho esvaziado, exigência de login, volta ao carrinho após o login, carrinho vazio, endereço incompleto, pagamento inválido e preço histórico preservado;
+- **pedido:** finalização com sucesso, carrinho esvaziado, exigência de login, volta ao carrinho após o login, carrinho vazio, endereço incompleto, pagamento inválido, preço histórico preservado, encomenda para evento (data válida, sem data, formato errado, antecedência insuficiente, prazo longo demais e limite exato) e entrega imediata sem data;
+- **interface e banco:** nomes nos ícones do topo e atualização de um banco antigo com as colunas novas, sem perder pedidos;
 - **meus pedidos e segurança:** listagem, lista vazia, exigência de login, bloqueio do pedido de outro cliente, página 404 e horário de Brasília.
 
 ## Deploy no Render

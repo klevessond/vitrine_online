@@ -169,42 +169,91 @@
             }
         }
 
-        .icones-topo .link-sair {
-            font-size: 0.9rem;
-            border: 1px solid white;
-            border-radius: 15px;
-            padding: 3px 10px;
+        /* Ícones do topo com nome embaixo */
+        .icones-topo .atalho {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            min-width: 48px;
+            margin-left: 8px;
         }
 
-        .area-mensagens {
-            max-width: 1000px;
-            margin: 20px auto 0 auto;
-            padding: 0 30px;
+        .atalho .icone {
+            position: relative;
+            font-size: 1.25rem;
+            line-height: 1;
         }
 
-        .mensagens {
-            margin: 0;
-            padding: 0;
-            list-style: none;
+        .atalho .rotulo {
+            font-size: 0.72rem;
+            line-height: 1;
         }
 
-        .mensagens li {
-            padding: 10px 12px;
-            border-radius: 5px;
+        .atalho .contador {
+            top: -8px;
+            right: -14px;
+        }
+
+        /* Cartão do produto não fica escondido atrás do cabeçalho fixo ao voltar da âncora */
+        .cartao-produto {
+            scroll-margin-top: 90px;
+        }
+
+        /* Avisos flutuantes no rodapé da tela */
+        .avisos {
+            position: fixed;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            width: min(92vw, 420px);
+            z-index: 200;
+            transition: opacity 0.4s;
+        }
+
+        .avisos.sumindo {
+            opacity: 0;
+        }
+
+        .aviso {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            margin-top: 8px;
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
             font-size: 0.95rem;
-            margin-bottom: 8px;
         }
 
-        .mensagens .erro {
-            background-color: #FEECEB;
-            color: #D32F2F;
-            border: 1px solid #F5C2C0;
+        .aviso span {
+            flex: 1;
         }
 
-        .mensagens .sucesso {
-            background-color: #EAF7EC;
-            color: #2E7D32;
-            border: 1px solid #B9E2BE;
+        .aviso-sucesso {
+            background-color: #2E7D32;
+            color: white;
+        }
+
+        .aviso-erro {
+            background-color: #D32F2F;
+            color: white;
+        }
+
+        .aviso a {
+            color: white;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .fechar-aviso {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0 4px;
         }
     </style>
 </head>
@@ -215,22 +264,42 @@
         <div class="icones-topo">
             {% if cliente_logado %}
             <span class="saudacao">Olá, {{ cliente_logado.nome.split()[0] }}</span>
-            <a href="{{ url_for('meus_pedidos') }}" title="Meus pedidos">📦</a>
-            <a href="{{ url_for('logout') }}" title="Sair da conta" class="link-sair">Sair</a>
+            <a href="{{ url_for('meus_pedidos') }}" class="atalho"><span class="icone" aria-hidden="true">📦</span><span class="rotulo">Pedidos</span></a>
             {% else %}
-            <a href="{{ url_for('login') }}" title="Entrar ou cadastrar">👤</a>
+            <a href="{{ url_for('login') }}" class="atalho"><span class="icone" aria-hidden="true">👤</span><span class="rotulo">Entrar</span></a>
             {% endif %}
-            <a href="{{ url_for('carrinho') }}" title="Carrinho de Compras" class="link-carrinho">🛒{% if qtd_carrinho %}<span class="contador">{{ qtd_carrinho }}</span>{% endif %}</a>
+            <a href="{{ url_for('carrinho') }}" class="atalho"><span class="icone" aria-hidden="true">🛒{% if qtd_carrinho %}<span class="contador">{{ qtd_carrinho }}</span>{% endif %}</span><span class="rotulo">Carrinho</span></a>
+            {% if cliente_logado %}
+            <a href="{{ url_for('logout') }}" class="atalho"><span class="icone" aria-hidden="true">🚪</span><span class="rotulo">Sair</span></a>
+            {% endif %}
         </div>
     </header>
 
-    <div class="area-mensagens">
-        {% include '_mensagens.html' %}
+    {# Avisos flutuantes: o cliente continua na vitrine e vê, por exemplo, "Item adicionado" #}
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}
+    <div class="avisos" id="avisos" role="status" aria-live="polite">
+        {% for categoria, texto in mensagens %}
+        <div class="aviso {{ 'aviso-erro' if categoria == 'erro' else 'aviso-sucesso' }}">
+            <span>{{ texto }}</span>
+            {% if categoria == 'carrinho' %}<a href="{{ url_for('carrinho') }}">Ver carrinho</a>{% endif %}
+            <button type="button" class="fechar-aviso" aria-label="Fechar aviso" onclick="this.parentElement.remove()">×</button>
+        </div>
+        {% endfor %}
     </div>
+    <script>
+        // Os avisos somem sozinhos depois de alguns segundos
+        setTimeout(() => {
+            const avisos = document.getElementById('avisos');
+            if (avisos) { avisos.classList.add('sumindo'); setTimeout(() => avisos.remove(), 400); }
+        }, 4000);
+    </script>
+    {% endif %}
+    {% endwith %}
 
     <main class="vitrine">
         {% for item in cupcakes %}
-        <div class="cartao-produto">
+        <div class="cartao-produto" id="produto-{{ item.id_produto }}">
             <img src="{{ item.imagem_url }}" alt="{{ item.nome }}">
             <div class="info-produto">
                 <h2 class="nome-produto">{{ item.nome }}</h2>

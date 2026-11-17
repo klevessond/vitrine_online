@@ -40,17 +40,29 @@ def test_carrinho_vazio(cliente):
 
 
 def test_adicionar_ao_carrinho(cliente):
-    """Adicionar um produto deve levá-lo ao carrinho com o total correto."""
-    resposta = cliente.get('/adicionar/1', follow_redirects=True)
+    """Adicionar um produto coloca no carrinho com o total correto."""
+    cliente.get('/adicionar/1')
+    resposta = cliente.get('/carrinho')
     assert resposta.status_code == 200
-    assert "Teste Velvet".encode() in resposta.data
+    assert "1x Teste Velvet".encode() in resposta.data
     assert "R$ 15,00".encode() in resposta.data
+
+
+def test_adicionar_continua_na_vitrine(cliente):
+    """Ao clicar em Adicionar, o cliente fica na vitrine e vê o aviso."""
+    resposta = cliente.get('/adicionar/1')
+    assert resposta.status_code == 302
+    assert resposta.headers['Location'].endswith('/#produto-1')
+    resposta = cliente.get('/')
+    assert "Teste Velvet adicionado ao carrinho.".encode() in resposta.data
+    assert "Ver carrinho".encode() in resposta.data
 
 
 def test_total_com_dois_itens(cliente):
     """Dois itens iguais devem somar o dobro do preço."""
     cliente.get('/adicionar/1')
-    resposta = cliente.get('/adicionar/1', follow_redirects=True)
+    cliente.get('/adicionar/1')
+    resposta = cliente.get('/carrinho')
     assert "R$ 30,00".encode() in resposta.data
 
 
@@ -181,7 +193,8 @@ def test_logout(cliente):
 def test_carrinho_agrupa_quantidade(cliente):
     """Adicionar o mesmo produto duas vezes mostra '2x' em uma única linha."""
     cliente.get('/adicionar/1')
-    resposta = cliente.get('/adicionar/1', follow_redirects=True)
+    cliente.get('/adicionar/1')
+    resposta = cliente.get('/carrinho')
     assert "2x Teste Velvet".encode() in resposta.data
     assert resposta.data.count("x Teste Velvet".encode()) == 1
 
@@ -356,3 +369,170 @@ def test_data_no_horario_de_brasilia():
     from datetime import datetime
     from app import formatar_data
     assert formatar_data(datetime(2026, 10, 15, 19, 13)) == '15/10/2026 16:13'
+
+
+# ---------------------- Quantidade digitada, ícones e encomendas ----------------------
+
+def test_botao_mais_continua_no_carrinho(cliente):
+    """O + do carrinho soma uma unidade e mantém o cliente no carrinho."""
+    cliente.get('/adicionar/1')
+    resposta = cliente.get('/aumentar/1', follow_redirects=True)
+    assert "2x Teste Velvet".encode() in resposta.data
+    assert "Finalizar Pedido".encode() in resposta.data
+
+
+def test_digitar_quantidade(cliente):
+    """O cliente digita a quantidade direto no carrinho."""
+    cliente.get('/adicionar/1')
+    resposta = cliente.post('/quantidade/1', data={'quantidade': '30'}, follow_redirects=True)
+    assert "30x Teste Velvet".encode() in resposta.data
+    assert "R$ 450,00".encode() in resposta.data
+
+
+def test_digitar_quantidade_zero_remove(cliente):
+    """Quantidade zero tira o item do carrinho."""
+    cliente.get('/adicionar/1')
+    resposta = cliente.post('/quantidade/1', data={'quantidade': '0'}, follow_redirects=True)
+    assert "carrinho está vazio".encode() in resposta.data
+
+
+def test_digitar_quantidade_invalida(cliente):
+    """Texto ou número negativo não muda a quantidade."""
+    cliente.get('/adicionar/1')
+    for valor in ['abc', '-3', '']:
+        resposta = cliente.post('/quantidade/1', data={'quantidade': valor}, follow_redirects=True)
+        assert "apenas números".encode() in resposta.data
+        assert "1x Teste Velvet".encode() in resposta.data
+
+
+def test_digitar_quantidade_acima_do_limite(cliente):
+    """Acima do limite, a quantidade é ajustada para o máximo e o cliente é avisado."""
+    from app import QUANTIDADE_MAXIMA
+    cliente.get('/adicionar/1')
+    resposta = cliente.post('/quantidade/1', data={'quantidade': '5000'}, follow_redirects=True)
+    assert f"{QUANTIDADE_MAXIMA}x Teste Velvet".encode() in resposta.data
+    assert "A quantidade foi ajustada".encode() in resposta.data
+
+
+def test_icones_do_topo_tem_nome(cliente):
+    """Os ícones do topo mostram o nome embaixo."""
+    resposta = cliente.get('/')
+    for nome in ['Entrar', 'Carrinho']:
+        assert f'<span class="rotulo">{nome}</span>'.encode() in resposta.data
+    cadastrar(cliente)
+    resposta = cliente.get('/')
+    for nome in ['Pedidos', 'Carrinho', 'Sair']:
+        assert f'<span class="rotulo">{nome}</span>'.encode() in resposta.data
+    assert '<span class="rotulo">Entrar</span>'.encode() not in resposta.data
+
+
+def data_daqui(dias):
+    from app import hoje_no_brasil
+    from datetime import timedelta
+    return (hoje_no_brasil() + timedelta(days=dias)).isoformat()
+
+
+def test_encomenda_para_evento(cliente):
+    """RN12: encomenda com data válida é gravada e aparece na confirmação e no histórico."""
+    from datetime import date
+    cadastrar(cliente)
+    cliente.get('/adicionar/1')
+    data = data_daqui(10)
+    resposta = cliente.post('/finalizar', data=dict(ENDERECO, tipo_entrega='evento', data_entrega=data),
+                            follow_redirects=True)
+    data_br = date.fromisoformat(data).strftime('%d/%m/%Y')
+    assert "Encomenda agendada para".encode() in resposta.data
+    assert data_br.encode() in resposta.data
+    with app.app_context():
+        pedido = db.session.get(Pedido, 1)
+        assert pedido.tipo_entrega == 'evento'
+        assert pedido.data_entrega == date.fromisoformat(data)
+    resposta = cliente.get('/meus-pedidos')
+    assert f"Encomenda para:</strong> {data_br}".encode() in resposta.data
+
+
+def test_entrega_imediata_sem_data(cliente):
+    """Na entrega imediata, nenhuma data é gravada e a confirmação mostra o tempo estimado."""
+    cadastrar(cliente)
+    cliente.get('/adicionar/1')
+    resposta = cliente.post('/finalizar', data=dict(ENDERECO, data_entrega=data_daqui(10)),
+                            follow_redirects=True)
+    assert "30 a 45 minutos".encode() in resposta.data
+    with app.app_context():
+        pedido = db.session.get(Pedido, 1)
+        assert pedido.tipo_entrega == 'imediata'
+        assert pedido.data_entrega is None
+
+
+@pytest.mark.parametrize('data, mensagem', [
+    ('', 'Escolha a data de entrega'),
+    ('31/12/2026', 'Escolha a data de entrega'),
+    ('ONTEM', 'Escolha a data de entrega'),
+    (None, 'pelo menos 2 dias'),   # amanhã: antecedência insuficiente
+    ('LONGE', 'até 90 dias'),
+])
+def test_encomenda_data_invalida(cliente, data, mensagem):
+    """Encomenda sem data, com formato errado, em cima da hora ou longe demais é recusada."""
+    if data is None:
+        data = data_daqui(1)
+    elif data == 'LONGE':
+        data = data_daqui(91)
+    elif data == 'ONTEM':
+        data = 'ontem'
+    cadastrar(cliente)
+    cliente.get('/adicionar/1')
+    resposta = cliente.post('/finalizar', data=dict(ENDERECO, tipo_entrega='evento', data_entrega=data))
+    assert resposta.status_code == 400
+    assert mensagem.encode() in resposta.data
+    assert 'value="evento" checked'.encode() in resposta.data
+    with app.app_context():
+        assert Pedido.query.count() == 0
+
+
+def test_tipo_entrega_invalido(cliente):
+    cadastrar(cliente)
+    cliente.get('/adicionar/1')
+    resposta = cliente.post('/finalizar', data=dict(ENDERECO, tipo_entrega='drone'))
+    assert resposta.status_code == 400
+    assert "Escolha quando quer receber".encode() in resposta.data
+
+
+def test_encomenda_no_limite_minimo(cliente):
+    """Exatamente 2 dias de antecedência é aceito."""
+    cadastrar(cliente)
+    cliente.get('/adicionar/1')
+    resposta = cliente.post('/finalizar', data=dict(ENDERECO, tipo_entrega='evento', data_entrega=data_daqui(2)),
+                            follow_redirects=True)
+    assert "Encomenda agendada para".encode() in resposta.data
+
+
+def test_banco_antigo_ganha_colunas_novas():
+    """Um banco criado antes desta versão recebe as colunas novas sem perder pedidos."""
+    import os, tempfile
+    from sqlalchemy import create_engine, inspect, text
+    from flask import Flask
+    from flask_sqlalchemy import SQLAlchemy
+    import app as modulo
+
+    caminho = os.path.join(tempfile.mkdtemp(), 'antigo.db')
+    motor = create_engine(f'sqlite:///{caminho}')
+    with motor.begin() as con:
+        con.execute(text("CREATE TABLE pedidos (id_pedido INTEGER PRIMARY KEY, valor_total NUMERIC(10,2))"))
+        con.execute(text("INSERT INTO pedidos (id_pedido, valor_total) VALUES (1, 12.00)"))
+
+    app_antigo = Flask('antigo')
+    app_antigo.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{caminho}'
+    banco = SQLAlchemy(app_antigo)
+    original = modulo.db
+    modulo.db = banco
+    try:
+        with app_antigo.app_context():
+            modulo.adicionar_colunas_novas()
+            modulo.adicionar_colunas_novas()  # rodar duas vezes não pode dar erro
+    finally:
+        modulo.db = original
+
+    colunas = {c['name'] for c in inspect(motor).get_columns('pedidos')}
+    assert {'tipo_entrega', 'data_entrega'} <= colunas
+    with motor.connect() as con:
+        assert con.execute(text("SELECT tipo_entrega FROM pedidos WHERE id_pedido = 1")).scalar() == 'imediata'

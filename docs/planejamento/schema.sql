@@ -49,13 +49,19 @@ CREATE TABLE pedidos (
     forma_pagamento  VARCHAR(10)    NOT NULL,
     status           VARCHAR(20)    NOT NULL DEFAULT 'recebido',
     valor_total      NUMERIC(10,2)  NOT NULL,
+    tipo_entrega     VARCHAR(10)    NOT NULL DEFAULT 'imediata',
+    data_entrega     DATE,
     CONSTRAINT fk_pedidos_cliente
         FOREIGN KEY (id_cliente) REFERENCES clientes (id_cliente),
     CONSTRAINT ck_pedidos_pagamento
         CHECK (forma_pagamento IN ('cartao', 'pix', 'dinheiro')),
     CONSTRAINT ck_pedidos_status
         CHECK (status IN ('recebido', 'em_preparo', 'saiu_entrega', 'entregue', 'cancelado')),
-    CONSTRAINT ck_pedidos_total CHECK (valor_total > 0)
+    CONSTRAINT ck_pedidos_total CHECK (valor_total > 0),
+    CONSTRAINT ck_pedidos_tipo_entrega
+        CHECK (tipo_entrega IN ('imediata', 'evento')),
+    CONSTRAINT ck_pedidos_data_evento
+        CHECK (tipo_entrega <> 'evento' OR data_entrega IS NOT NULL)
 );
 
 CREATE INDEX ix_pedidos_cliente ON pedidos (id_cliente);

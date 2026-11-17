@@ -59,6 +59,10 @@ Prioridade: **A** = essencial, **B** = importante, **C** = desejável. Pontos na
 | US16 | Como **administrador**, quero cadastrar, editar e desativar cupcakes, para manter a vitrine atualizada. | 8 | C | Futuro |
 | US17 | Como **administrador**, quero mudar o status dos pedidos, para informar o cliente sobre a entrega. | 5 | C | Futuro |
 | US18 | Como **cliente**, quero recuperar minha senha pelo e-mail, para não perder o acesso à conta. | 5 | C | Futuro |
+| US19 | Como **cliente**, quero digitar a quantidade direto no carrinho, para pedir muitas unidades sem clicar várias vezes. | 2 | B | ✅ Implementada |
+| US20 | Como **cliente**, quero fazer uma encomenda para um evento escolhendo a data de entrega, para receber os cupcakes no dia certo. | 5 | B | ✅ Implementada |
+| US21 | Como **visitante**, quero continuar na vitrine ao adicionar um cupcake e ver um aviso, para escolher vários sabores sem ir e voltar do carrinho. | 2 | B | ✅ Implementada |
+| US22 | Como **visitante**, quero ver o nome de cada ícone do topo, para entender o que cada um faz. | 1 | B | ✅ Implementada |
 
 ## 1.6 Mapa de afinidade
 
@@ -88,6 +92,8 @@ As histórias foram agrupadas por tema:
 | RN09 | O preço de cada item é registrado no momento da compra e não muda se o preço do produto mudar depois. |
 | RN10 | O total do pedido é a soma de quantidade × preço unitário de todos os itens. |
 | RN11 | Todo pedido começa com o status "recebido" e segue: recebido → em preparo → saiu para entrega → entregue. Um pedido pode ser cancelado antes de sair para entrega. |
+| RN12 | O cliente escolhe entre entrega imediata (30 a 45 minutos) e encomenda para evento. A encomenda exige uma data de entrega com pelo menos 2 dias de antecedência e no máximo 90 dias à frente. |
+| RN13 | A quantidade de cada sabor no carrinho vai de 1 a 200 unidades; digitar 0 remove o item. |
 
 ## 1.8 Critérios de aceitação das histórias principais
 
