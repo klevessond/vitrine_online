@@ -4,7 +4,7 @@ Aplicação web de uma loja virtual de cupcakes gourmet, desenvolvida para o **P
 
 O sistema foi planejado no PIT I (histórias de usuário, UML e protótipos de tela) e implementado no PIT II, seguindo o padrão de arquitetura **MVC**.
 
-**🔗 Aplicação publicada:** [cole aqui o link do Render]
+**🔗 Aplicação publicada:** https://vitrine-online-ii.onrender.com/
 
 **👤 Autor:** Klevesson Douglas Rodrigues da Silva Conrado — RGM 37167103
 
